@@ -1,29 +1,22 @@
 <script setup lang="ts">
+import ConfirmablePasswordController from '@/actions/App/Http/Controllers/Auth/ConfirmablePasswordController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { store } from '@/routes/password/confirm';
 import { Form, Head } from '@inertiajs/vue3';
+import { LoaderCircle } from 'lucide-vue-next';
 </script>
 
 <template>
-    <AuthLayout
-        title="Confirm your password"
-        description="This is a secure area of the application. Please confirm your password before continuing."
-    >
-        <Head title="Confirm password" />
+    <AuthLayout title="Confirmar tu contraseña" description="Esta es un área segura de la aplicación. Por favor confirma tu contraseña antes de continuar.">
+        <Head title="Confirmar contraseña" />
 
-        <Form
-            v-bind="store.form()"
-            reset-on-success
-            v-slot="{ errors, processing }"
-        >
+        <Form v-bind="ConfirmablePasswordController.store.form()" reset-on-success v-slot="{ errors, processing }">
             <div class="space-y-6">
                 <div class="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">Contraseña</Label>
                     <Input
                         id="password"
                         type="password"
@@ -38,13 +31,9 @@ import { Form, Head } from '@inertiajs/vue3';
                 </div>
 
                 <div class="flex items-center">
-                    <Button
-                        class="w-full"
-                        :disabled="processing"
-                        data-test="confirm-password-button"
-                    >
-                        <Spinner v-if="processing" />
-                        Confirm Password
+                    <Button class="w-full cursor-pointer rounded-md bg-white/20 hover:bg-white/30 active:bg-white/40 transition-all duration-300 font-semibold text-white shadow-lg" :disabled="processing">
+                        <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
+                        Confirmar Contraseña
                     </Button>
                 </div>
             </div>

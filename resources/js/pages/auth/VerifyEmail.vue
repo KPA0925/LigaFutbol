@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import EmailVerificationNotificationController from '@/actions/App/Http/Controllers/Auth/EmailVerificationNotificationController';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { logout } from '@/routes';
-import { send } from '@/routes/verification';
 import { Form, Head } from '@inertiajs/vue3';
+import { LoaderCircle } from 'lucide-vue-next';
 
 defineProps<{
     status?: string;
@@ -13,37 +13,20 @@ defineProps<{
 </script>
 
 <template>
-    <AuthLayout
-        title="Verify email"
-        description="Please verify your email address by clicking on the link we just emailed to you."
-    >
-        <Head title="Email verification" />
+    <AuthLayout title="Verificacion" description="Por favor verifica tu dirección de correo electrónico haciendo clic en el enlace que acabamos de enviarte.">
+        <Head title="Verificación de correo electrónico" />
 
-        <div
-            v-if="status === 'verification-link-sent'"
-            class="mb-4 text-center text-sm font-medium text-green-600"
-        >
-            A new verification link has been sent to the email address you
-            provided during registration.
+        <div v-if="status === 'verification-link-sent'" class="mb-4 text-center text-sm font-medium text-green-600">
+            Se ha enviado un nuevo enlace de verificación a la dirección de correo electrónico que proporcionaste durante el registro.
         </div>
 
-        <Form
-            v-bind="send.form()"
-            class="space-y-6 text-center"
-            v-slot="{ processing }"
-        >
-            <Button :disabled="processing" variant="secondary">
-                <Spinner v-if="processing" />
-                Resend verification email
+        <Form v-bind="EmailVerificationNotificationController.store.form()" class="space-y-6 text-center" v-slot="{ processing }">
+            <Button class="cursor-pointer rounded-md bg-white/20 hover:bg-white/30 active:bg-white/40 transition-all duration-300 font-semibold text-white shadow-lg" :disabled="processing" variant="secondary">
+                <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
+                Reenviar enlace de verificación
             </Button>
 
-            <TextLink
-                :href="logout()"
-                as="button"
-                class="mx-auto block text-sm"
-            >
-                Log out
-            </TextLink>
+            <TextLink :href="logout()" as="button" class="mx-auto block text-sm cursor-pointer"> Cerrar sesión </TextLink>
         </Form>
     </AuthLayout>
 </template>
