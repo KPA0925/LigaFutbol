@@ -1,66 +1,156 @@
 <script setup lang="ts">
-import NavFooter from '@/components/NavFooter.vue';
-import NavMain from '@/components/NavMain.vue';
-import NavUser from '@/components/NavUser.vue';
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
-import AppLogo from './AppLogo.vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+interface Role {
+    id: number;
+    name: string;
+}
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
-];
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    roles?: Role[];
+}
+
+const user = computed<User | null>(() => usePage().props.auth.user as User);
+
+const isAdmin = computed(() => {
+    return user.value?.roles?.some((role) => role.name === 'admin') ?? false;
+});
+
+const isUser = computed(() => {
+    return user.value?.roles?.some((role) => role.name === 'user') ?? false;
+});
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
-                            <AppLogo />
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarHeader>
+    <aside
+        class="flex h-screen w-64 flex-col justify-between overflow-hidden rounded-r-[50px] border-r-4 border-[#003366] bg-[#D62027] text-white shadow-lg"
+    >
+        <div class="flex flex-col items-center py-6">
+            <img
+                src="/img/logo.webp"
+                alt="Logo"
+                class="mb-4 h-10 object-contain"
+            />
+        </div>
 
-        <SidebarContent>
-            <NavMain :items="mainNavItems" />
-        </SidebarContent>
+        <nav class="flex-1 space-y-2 px-4">
+            <template v-if="isUser">
+                <Link
+                    href="/dashboard"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-futbol w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Partidos</span>
+                </Link>
 
-        <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
-            <NavUser />
-        </SidebarFooter>
-    </Sidebar>
-    <slot />
+                <Link
+                    href="/equipos"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-users w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Equipos</span>
+                </Link>
+
+                <Link
+                    href="/jugadores"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-user w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Jugadores</span>
+                </Link>
+
+                <Link
+                    href="/presidentes"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-user-tie w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Presidentes</span>
+                </Link>
+
+                <Link
+                    href="/comentarios"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-comments w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Comentarios</span>
+                </Link>
+
+                <Link
+                    href="/estadisticas"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-chart-line w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Estadísticas</span>
+                </Link>
+            </template>
+
+            <template v-if="isAdmin">
+                <Link
+                    href="/admin/partidos"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-futbol w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Partidos</span>
+                </Link>
+
+                <Link
+                    href="/admin/equipos"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-users w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Equipos</span>
+                </Link>
+
+                <Link
+                    href="/admin/jugadores"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-user w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Jugadores</span>
+                </Link>
+
+                <Link
+                    href="/admin/presidentes"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-user-tie w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Presidentes</span>
+                </Link>
+
+                <Link
+                    href="/admin/comentarios"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-comments w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Comentarios</span>
+                </Link>
+
+                <Link
+                    href="/admin/estadisticas"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-chart-line w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Estadísticas</span>
+                </Link>
+
+                <Link
+                    href="/admin"
+                    class="flex items-center gap-3 rounded-lg bg-[#B81E23] px-3 py-2 transition hover:bg-[#A51920]"
+                >
+                    <i class="fas fa-crown w-4 text-yellow-400"></i>
+                    <span class="cursor-pointer font-semibold text-yellow-400"
+                        >Panel Admin</span
+                    >
+                </Link>
+            </template>
+        </nav>
+
+        <div class="border-t border-[#003366]/30 py-4 text-center text-xs">
+            © 2025 Liga de Fútbol
+        </div>
+    </aside>
 </template>

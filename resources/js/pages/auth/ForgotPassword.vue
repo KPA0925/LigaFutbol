@@ -16,30 +16,54 @@ defineProps<{
 </script>
 
 <template>
-    <AuthLayout title="Contraseña Olvidada" description="Introduce tu correo electrónico para recibir un enlace de restablecimiento de contraseña" :back="login().url">
+    <AuthLayout
+        title="Contraseña Olvidada"
+        description="Introduce tu correo electrónico para recibir un enlace de restablecimiento de contraseña"
+        :back="login().url"
+    >
         <Head title="Contraseña Olvidada" />
 
-        <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600">
+        <div
+            v-if="status"
+            class="mb-4 text-center text-sm font-medium text-green-600"
+        >
             {{ status }}
         </div>
 
         <div class="space-y-6">
-            <Form v-bind="PasswordResetLinkController.store.form()" v-slot="{ errors, processing }">
+            <Form
+                v-bind="PasswordResetLinkController.store.form()"
+                v-slot="{ errors, processing }"
+            >
                 <div class="grid gap-2">
                     <Label for="email">Correo Electrónico</Label>
-                    <Input id="email" type="email" name="email" autocomplete="off" autofocus placeholder="correo@ejemplo.com" />
+                    <Input
+                        id="email"
+                        type="email"
+                        name="email"
+                        class="w-full rounded-md bg-white/10 border border-white/20 text-white placeholder-white/60 focus:border-white focus:ring-1 focus:ring-white focus:outline-none"
+                        autocomplete="off"
+                        autofocus
+                        placeholder="correo@ejemplo.com"
+                    />
                     <InputError :message="errors.email" />
                 </div>
 
                 <div class="my-6 flex items-center justify-start">
-                    <Button class="w-full cursor-pointer rounded-md bg-white/20 hover:bg-white/30 active:bg-white/40 transition-all duration-300 font-semibold text-white shadow-lg" :disabled="processing">
-                        <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
+                    <Button
+                        class="w-full cursor-pointer rounded-md bg-white/20 font-semibold text-white shadow-lg transition-all duration-300 hover:bg-white/30 active:bg-white/40"
+                        :disabled="processing"
+                    >
+                        <LoaderCircle
+                            v-if="processing"
+                            class="h-4 w-4 animate-spin"
+                        />
                         Enviar enlace de restablecimiento de contraseña
                     </Button>
                 </div>
             </Form>
 
-            <div class="space-x-1 text-center text-sm text-muted-foreground">
+            <div class="text-muted-foreground space-x-1 text-center text-sm">
                 <span>O volver a </span>
                 <TextLink :href="login()">Iniciar sesión</TextLink>
             </div>

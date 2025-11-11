@@ -18,7 +18,10 @@ const inputEmail = ref(props.email);
 </script>
 
 <template>
-    <AuthLayout title="Restablecer contraseña" description="Por favor ingresa tu nueva contraseña a continuación">
+    <AuthLayout
+        title="Restablecer contraseña"
+        description="Por favor ingresa tu nueva contraseña a continuación"
+    >
         <Head title="Restablecer contraseña" />
 
         <Form
@@ -30,7 +33,15 @@ const inputEmail = ref(props.email);
             <div class="grid gap-6">
                 <div class="grid gap-2">
                     <Label for="email">Correo</Label>
-                    <Input id="email" type="email" name="email" autocomplete="email" v-model="inputEmail" class="mt-1 block w-full" readonly />
+                    <Input
+                        id="email"
+                        type="email"
+                        name="email"
+                        autocomplete="email"
+                        v-model="inputEmail"
+                        class="w-full rounded-md bg-white/10 border border-white/20 text-white placeholder-white/60 focus:border-white focus:ring-1 focus:ring-white focus:outline-none"
+                        readonly
+                    />
                     <InputError :message="errors.email" class="mt-2" />
                 </div>
 
@@ -41,7 +52,7 @@ const inputEmail = ref(props.email);
                         type="password"
                         name="password"
                         autocomplete="new-password"
-                        class="mt-1 block w-full"
+                        class="w-full rounded-md bg-white/10 border border-white/20 text-white placeholder-white/60 focus:border-white focus:ring-1 focus:ring-white focus:outline-none"
                         autofocus
                         placeholder="Contraseña"
                     />
@@ -49,20 +60,29 @@ const inputEmail = ref(props.email);
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation"> Confirmar Contraseña </Label>
+                    <Label for="password_confirmation">
+                        Confirmar Contraseña
+                    </Label>
                     <Input
                         id="password_confirmation"
                         type="password"
                         name="password_confirmation"
                         autocomplete="new-password"
-                        class="mt-1 block w-full"
+                        class="w-full rounded-md bg-white/10 border border-white/20 text-white placeholder-white/60 focus:border-white focus:ring-1 focus:ring-white focus:outline-none"
                         placeholder="Confirmar contraseña"
                     />
                     <InputError :message="errors.password_confirmation" />
                 </div>
 
-                <Button type="submit" class="mt-4 w-full cursor-pointer rounded-md bg-white/20 hover:bg-white/30 active:bg-white/40 transition-all duration-300 font-semibold text-white shadow-lg" :disabled="processing">
-                    <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
+                <Button
+                    type="submit"
+                    class="mt-4 w-full cursor-pointer rounded-md bg-white/20 font-semibold text-white shadow-lg transition-all duration-300 hover:bg-white/30 active:bg-white/40"
+                    :disabled="processing"
+                >
+                    <LoaderCircle
+                        v-if="processing"
+                        class="h-4 w-4 animate-spin"
+                    />
                     Restablecer contraseña
                 </Button>
             </div>

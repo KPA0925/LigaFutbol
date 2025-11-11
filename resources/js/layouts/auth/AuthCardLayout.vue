@@ -21,10 +21,8 @@ defineProps<{
         class="flex min-h-screen items-center justify-center bg-cover bg-center relative"
         style="background-image: url('/img/fondo-login.webp')"
     >
-        <!-- Capa oscura suave -->
         <div class="absolute inset-0 bg-black/40"></div>
 
-        <!-- Contenedor del login -->
         <div class="relative z-10 w-full max-w-md px-6">
             <Card
                 class="rounded-2xl shadow-2xl border border-white/10 bg-white/10 dark:bg-gray-900/20 backdrop-blur-xl"
@@ -52,7 +50,6 @@ defineProps<{
             </Card>
         </div>
 
-        <!-- Texto inferior -->
         <div class="absolute bottom-6 left-6 z-10 text-white drop-shadow-lg">
             <h2 class="text-3xl font-bold">Liga de Fútbol</h2>
         </div>

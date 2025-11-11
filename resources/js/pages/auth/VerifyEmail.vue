@@ -22,7 +22,7 @@ defineProps<{
 
         <Form v-bind="EmailVerificationNotificationController.store.form()" class="space-y-6 text-center" v-slot="{ processing }">
             <Button class="cursor-pointer rounded-md bg-white/20 hover:bg-white/30 active:bg-white/40 transition-all duration-300 font-semibold text-white shadow-lg" :disabled="processing" variant="secondary">
-                <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
+                <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin"/>
                 Reenviar enlace de verificación
             </Button>
 

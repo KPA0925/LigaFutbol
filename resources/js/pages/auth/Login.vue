@@ -38,6 +38,7 @@ defineProps<{
                         id="email"
                         type="email"
                         name="email"
+                        class="w-full rounded-md bg-white/10 border border-white/20 text-white placeholder-white/60 focus:border-white focus:ring-1 focus:ring-white focus:outline-none"
                         required
                         autofocus
                         :tabindex="1"
@@ -56,6 +57,7 @@ defineProps<{
                         id="password"
                         type="password"
                         name="password"
+                        class="w-full rounded-md bg-white/10 border border-white/20 text-white placeholder-white/60 focus:border-white focus:ring-1 focus:ring-white focus:outline-none"
                         required
                         :tabindex="2"
                         autocomplete="current-password"
