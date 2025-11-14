@@ -16,17 +16,17 @@ class Team extends Model
 
     public function players()
     {
-        return $this->hasMany(Player::class);
+        return $this->hasMany(Player::class, 'id_team');
     }
 
     public function presidents()
     {
-        return $this->hasOne(President::class);
+        return $this->hasOne(President::class, 'id_team');
     }
 
     public function matches()
     {
-        return $this->belongsToMany(FootballMatch::class, 'teamMatches', 'id_home_team', 'id_match')
-                    ->withPivot('id_teamMatch');
+        return $this->belongsToMany(FootballMatch::class, 'teams_matches', 'id_home_team', 'id_match')
+            ->withPivot('id_away_team');
     }
 }

@@ -3,63 +3,82 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\President;
+use App\Models\Team;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class PresidentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $presidents = President::with('team')->latest()->get();
+
+        return Inertia::render('admin/Presidents/Index', [
+            'presidents' => $presidents,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $teams = Team::select('id', 'name')->get();
+
+        return Inertia::render('admin/Presidents/Create', [
+            'teams' => $teams,
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'DNI' => 'required|string|max:50',
+            'name' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'birth_date' => 'required|date',
+            'elected_date' => 'required|date',
+            'id_team' => 'required|exists:teams,id',
+        ]);
+
+        President::create($validated);
+
+        return redirect()->route('admin.presidents.index')
+            ->with('success', 'Presidente creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(President $president)
     {
-        //
+        $president->load('team');
+
+        $teams = Team::select('id', 'name')->get();
+
+        return Inertia::render('admin/Presidents/Edit', [
+            'president' => $president,
+            'teams' => $teams,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, President $president)
     {
-        //
+        $validated = $request->validate([
+            'DNI' => 'required|string|max:50',
+            'name' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'birth_date' => 'required|date',
+            'elected_date' => 'required|date',
+            'id_team' => 'required|exists:teams,id',
+        ]);
+
+        $president->update($validated);
+
+        return redirect()->route('admin.presidents.index')
+            ->with('success', 'Presidente actualizado correctamente.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(President $president)
     {
-        //
-    }
+        $president->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.presidents.index')
+            ->with('success', 'Presidente eliminado correctamente.');
     }
 }

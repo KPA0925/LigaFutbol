@@ -40,6 +40,14 @@ const isUser = computed(() => {
         <nav class="flex-1 space-y-2 px-4">
             <template v-if="isUser">
                 <Link
+                    href="/estadisticas"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-chart-line w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Estadísticas</span>
+                </Link>
+
+                <Link
                     href="/dashboard"
                     class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
                 >
@@ -78,19 +86,21 @@ const isUser = computed(() => {
                     <i class="fas fa-comments w-4 text-white"></i>
                     <span class="cursor-pointer text-white">Comentarios</span>
                 </Link>
-
-                <Link
-                    href="/estadisticas"
-                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
-                >
-                    <i class="fas fa-chart-line w-4 text-white"></i>
-                    <span class="cursor-pointer text-white">Estadísticas</span>
-                </Link>
             </template>
 
             <template v-if="isAdmin">
                 <Link
-                    href="/admin/partidos"
+                    href="/admin"
+                    class="flex items-center gap-3 rounded-lg bg-[#B81E23] px-3 py-2 transition hover:bg-[#A51920]"
+                >
+                    <i class="fas fa-crown w-4 text-yellow-400"></i>
+                    <span class="cursor-pointer font-semibold text-yellow-400"
+                        >Estadísticas</span
+                    >
+                </Link>
+
+                <Link
+                    href="/admin/matches"
                     class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
                 >
                     <i class="fas fa-futbol w-4 text-white"></i>
@@ -98,7 +108,7 @@ const isUser = computed(() => {
                 </Link>
 
                 <Link
-                    href="/admin/equipos"
+                    href="/admin/teams"
                     class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
                 >
                     <i class="fas fa-users w-4 text-white"></i>
@@ -106,7 +116,7 @@ const isUser = computed(() => {
                 </Link>
 
                 <Link
-                    href="/admin/jugadores"
+                    href="/admin/players"
                     class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
                 >
                     <i class="fas fa-user w-4 text-white"></i>
@@ -114,7 +124,15 @@ const isUser = computed(() => {
                 </Link>
 
                 <Link
-                    href="/admin/presidentes"
+                    href="/admin/goals"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
+                >
+                    <i class="fas fa-user w-4 text-white"></i>
+                    <span class="cursor-pointer text-white">Goles</span>
+                </Link>
+
+                <Link
+                    href="/admin/presidents"
                     class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
                 >
                     <i class="fas fa-user-tie w-4 text-white"></i>
@@ -122,29 +140,11 @@ const isUser = computed(() => {
                 </Link>
 
                 <Link
-                    href="/admin/comentarios"
+                    href="/admin/comments"
                     class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
                 >
                     <i class="fas fa-comments w-4 text-white"></i>
                     <span class="cursor-pointer text-white">Comentarios</span>
-                </Link>
-
-                <Link
-                    href="/admin/estadisticas"
-                    class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-[#B81E23]"
-                >
-                    <i class="fas fa-chart-line w-4 text-white"></i>
-                    <span class="cursor-pointer text-white">Estadísticas</span>
-                </Link>
-
-                <Link
-                    href="/admin"
-                    class="flex items-center gap-3 rounded-lg bg-[#B81E23] px-3 py-2 transition hover:bg-[#A51920]"
-                >
-                    <i class="fas fa-crown w-4 text-yellow-400"></i>
-                    <span class="cursor-pointer font-semibold text-yellow-400"
-                        >Panel Admin</span
-                    >
                 </Link>
             </template>
         </nav>

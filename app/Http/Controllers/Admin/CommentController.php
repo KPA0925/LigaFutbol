@@ -3,63 +3,69 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Comment;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $comments = Comment::with('user')->latest()->get();
+
+        return Inertia::render('admin/Comments/Index', [
+            'comments' => $comments,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $users = User::select('id', 'name')->get();
+
+        return Inertia::render('admin/Comments/Create', [
+            'users' => $users,
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'description' => 'required|string|max:255',
+            'id_user' => 'required|exists:users,id',
+        ]);
+
+        Comment::create($validated);
+
+        return redirect()->route('admin.comments.index')->with('success', 'Comentario creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Comment $comment)
     {
-        //
+        $users = User::select('id', 'name')->get();
+
+        return Inertia::render('admin/Comments/Edit', [
+            'comment' => $comment,
+            'users' => $users,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Comment $comment)
     {
-        //
+        $validated = $request->validate([
+            'description' => 'required|string|max:255',
+            'id_user' => 'required|exists:users,id',
+        ]);
+
+        $comment->update($validated);
+
+        return redirect()->route('admin.comments.index')->with('success', 'Comentario actualizado correctamente.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Comment $comment)
     {
-        //
-    }
+        $comment->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.comments.index')->with('success', 'Comentario eliminado correctamente.');
     }
 }

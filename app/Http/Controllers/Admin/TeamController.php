@@ -3,63 +3,67 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Team;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TeamController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $teams = Team::withCount('players')->latest()->get();
+
+        return Inertia::render('admin/Teams/Index', [
+            'teams' => $teams,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return Inertia::render('admin/Teams/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'founded_date' => 'required|date',
+            'city' => 'required|string|max:255',
+            'stadium' => 'required|string|max:255',
+            'capacity' => 'required|integer|min:1000',
+        ]);
+
+        Team::create($validated);
+
+        return redirect()->route('admin.teams.index')->with('success', 'Equipo creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Team $team)
     {
-        //
+        return Inertia::render('admin/Teams/Edit', [
+            'team' => $team,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Team $team)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'founded_date' => 'required|date',
+            'city' => 'required|string|max:255',
+            'stadium' => 'required|string|max:255',
+            'capacity' => 'required|integer|min:1000',
+        ]);
+
+        $team->update($validated);
+
+        return redirect()->route('admin.teams.index')->with('success', 'Equipo actualizado correctamente.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Team $team)
     {
-        //
-    }
+        $team->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.teams.index')->with('success', 'Equipo eliminado correctamente.');
     }
 }

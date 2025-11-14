@@ -7,15 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class President extends Model
 {
     protected $fillable = [
+        'DNI',
         'name',
         'lastname',
         'birth_date',
         'elected_date',
-        'team_id',
+        'id_team',
     ];
 
     public function team()
     {
-        return $this->belongsTo(Team::class);
+        return $this->belongsTo(Team::class, 'id_team');
     }
 }

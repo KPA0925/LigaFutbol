@@ -9,17 +9,17 @@ class Goal extends Model
     protected $fillable = [
         'minute',
         'description',
-        'player_id',
-        'match_id',
+        'id_player',
+        'id_match',
     ];
 
     public function player()
     {
-        return $this->belongsTo(Player::class);
+        return $this->belongsTo(Player::class, 'id_player');
     }
 
     public function match()
     {
-        return $this->belongsTo(FootballMatch::class);
+        return $this->belongsTo(FootballMatch::class, 'id_match');
     }
 }

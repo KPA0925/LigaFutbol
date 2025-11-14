@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class FootballMatchTeam extends Model
 {
-    protected $table = 'teamMatches';
+    protected $table = 'teams_matches';
 
     protected $fillable = [
         'id_match',
@@ -19,8 +19,13 @@ class FootballMatchTeam extends Model
         return $this->belongsTo(FootballMatch::class, 'id_match');
     }
 
-    public function team()
+    public function homeTeam()
     {
         return $this->belongsTo(Team::class, 'id_home_team');
+    }
+
+    public function awayTeam()
+    {
+        return $this->belongsTo(Team::class, 'id_away_team');
     }
 }

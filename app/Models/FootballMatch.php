@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class FootballMatch extends Model
 {
+    protected $table = 'matches';
+
     protected $fillable = [
         'match_date_time',
         'goal_home',
@@ -13,14 +15,35 @@ class FootballMatch extends Model
         'season',
     ];
 
-    public function teams()
+    // Relación directa con la tabla pivote
+    public function pivot()
     {
-        return $this->belongsToMany(Team::class, 'teamMatches', 'id_match', 'id_home_team')
-                    ->withPivot('id_teamMatch');
+        return $this->hasOne(FootballMatchTeam::class, 'id_match');
     }
 
-    public function goals()
+    // Equipo local
+    public function homeTeam()
     {
-        return $this->hasMany(Goal::class, 'match_id');
+        return $this->hasOneThrough(
+            Team::class,
+            FootballMatchTeam::class,
+            'id_match',        // FK en teams_matches hacia matches
+            'id',              // FK en teams hacia teams_matches
+            'id',              // PK en matches
+            'id_home_team'     // Clave en teams_matches hacia teams (home)
+        );
+    }
+
+    // Equipo visitante
+    public function awayTeam()
+    {
+        return $this->hasOneThrough(
+            Team::class,
+            FootballMatchTeam::class,
+            'id_match',
+            'id',
+            'id',
+            'id_away_team'
+        );
     }
 }
