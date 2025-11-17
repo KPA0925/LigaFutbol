@@ -20,47 +20,72 @@ function submit() {
 
 <template>
     <Head title="Nuevo Comentario" />
+
     <AppLayout>
-        <div class="mx-auto max-w-xl p-6">
-            <h1 class="mb-4 text-2xl font-bold">➕ Crear Comentario</h1>
+        <div class="flex justify-center py-10">
+            <div
+                class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
+            >
+                <!-- Título -->
+                <h2 class="mb-1 text-2xl font-semibold text-gray-800">
+                    Crear Nuevo Comentario
+                </h2>
+                <p class="mb-6 text-gray-500">
+                    Ingrese los datos del nuevo comentario.
+                </p>
 
-            <form @submit.prevent="submit" class="space-y-4">
-                <div>
-                    <Label>Usuario</Label>
-                    <select
-                        v-model="form.id_user"
-                        class="w-full rounded border p-2"
-                        required
-                    >
-                        <option value="">Seleccione un usuario</option>
-                        <option
-                            v-for="user in users"
-                            :key="user.id"
-                            :value="user.id"
+                <form @submit.prevent="submit" class="space-y-5">
+                    <!-- Usuario -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Usuario</Label>
+                        <select
+                            v-model="form.id_user"
+                            class="h-11 rounded-lg border border-gray-300 px-3 text-gray-700 focus:border-blue-500 focus:outline-none"
+                            required
                         >
-                            {{ user.name }}
-                        </option>
-                    </select>
-                </div>
+                            <option value="">Seleccione un usuario</option>
+                            <option
+                                v-for="user in users"
+                                :key="user.id"
+                                :value="user.id"
+                            >
+                                {{ user.name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <div>
-                    <Label>Descripción</Label>
-                    <Input
-                        v-model="form.description"
-                        placeholder="Escribe el comentario..."
-                        required
-                    />
-                </div>
+                    <!-- Descripción -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Descripción</Label>
+                        <Input
+                            v-model="form.description"
+                            placeholder="Escribe el comentario..."
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <div class="flex justify-end gap-2 pt-4">
-                    <Link :href="route('admin.comments.index')">
-                        <Button variant="outline">Cancelar</Button>
-                    </Link>
-                    <Button type="submit" :disabled="form.processing"
-                        >Guardar</Button
-                    >
-                </div>
-            </form>
+                    <!-- Botones -->
+                    <div class="flex justify-end gap-3 pt-3">
+                        <Link :href="route('admin.comments.index')">
+                            <Button
+                                variant="outline"
+                                class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                            >
+                                Cancelar
+                            </Button>
+                        </Link>
+
+                        <Button
+                            type="submit"
+                            class="px-4 py-2 bg-[#D62027] text-white"
+                            :disabled="form.processing"
+                        >
+                            Guardar
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </div>
     </AppLayout>
 </template>

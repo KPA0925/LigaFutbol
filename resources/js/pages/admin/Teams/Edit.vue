@@ -27,44 +27,92 @@ function submit() {
     <Head title="Editar Equipo" />
 
     <AppLayout>
-        <div class="mx-auto max-w-xl p-6">
-            <h1 class="mb-4 text-2xl font-bold">✏️ Editar Equipo</h1>
+        <div class="flex justify-center py-10">
+            <div
+                class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
+            >
+                <!-- Título -->
+                <h2 class="mb-1 text-2xl font-semibold text-gray-800">
+                    Editar Equipo
+                </h2>
+                <p class="mb-6 text-gray-500">
+                    Modifique los datos del equipo seleccionado.
+                </p>
 
-            <form @submit.prevent="submit" class="space-y-4">
-                <div>
-                    <Label>Nombre del equipo</Label>
-                    <Input v-model="form.name" required />
-                </div>
+                <form @submit.prevent="submit" class="space-y-5">
+                    <!-- Nombre -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Nombre del equipo</Label>
+                        <Input
+                            v-model="form.name"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <div>
-                    <Label>Fecha de fundación</Label>
-                    <Input type="date" v-model="form.founded_date" required />
-                </div>
+                    <!-- Fecha fundación -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Fecha de fundación</Label>
+                        <Input
+                            type="date"
+                            v-model="form.founded_date"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <div>
-                    <Label>Ciudad</Label>
-                    <Input v-model="form.city" required />
-                </div>
+                    <!-- Ciudad -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Ciudad</Label>
+                        <Input
+                            v-model="form.city"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <div>
-                    <Label>Estadio</Label>
-                    <Input v-model="form.stadium" required />
-                </div>
+                    <!-- Estadio -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Estadio</Label>
+                        <Input
+                            v-model="form.stadium"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <div>
-                    <Label>Capacidad</Label>
-                    <Input type="number" v-model="form.capacity" required />
-                </div>
+                    <!-- Capacidad -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Capacidad</Label>
+                        <Input
+                            type="number"
+                            v-model="form.capacity"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <div class="flex justify-end gap-2 pt-4">
-                    <Link :href="route('admin.teams.index')">
-                        <Button variant="outline">Cancelar</Button>
-                    </Link>
-                    <Button type="submit" :disabled="form.processing">
-                        Actualizar
-                    </Button>
-                </div>
-            </form>
+                    <!-- Botones -->
+                    <div class="flex justify-end gap-3 pt-3">
+                        <Link :href="route('admin.teams.index')">
+                            <Button
+                                class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                                variant="outline"
+                            >
+                                Cancelar
+                            </Button>
+                        </Link>
+
+                        <Button
+                            type="submit"
+                            :disabled="form.processing"
+                            class="px-4 py-2 bg-[#D62027] text-white"
+                        >
+                            Actualizar
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </div>
     </AppLayout>
 </template>

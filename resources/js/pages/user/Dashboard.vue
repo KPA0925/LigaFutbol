@@ -4,70 +4,65 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Partidos',
-        href: dashboard().url,
-    },
-];
+const props = defineProps({
+    totalTeams: Number,
+    totalPlayers: Number,
+    totalMatches: Number,
+    totalGoals: Number,
+});
 
-const partidos = [
-    {
-        id: 1,
-        equipoA: 'Tigres FC',
-        equipoB: 'Leones Rojos',
-        estado: 'Jugando',
-        marcador: '2 - 1',
-    },
-    {
-        id: 2,
-        equipoA: 'Águilas Doradas',
-        equipoB: 'Pumas',
-        estado: 'Finalizado',
-        marcador: '3 - 0',
-    },
-    {
-        id: 3,
-        equipoA: 'Huracanes',
-        equipoB: 'Toros FC',
-        estado: 'En espera',
-        marcador: '-',
-    },
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: dashboard().url },
 ];
 </script>
 
 <template>
-    <Head title="Partidos" />
+    <Head title="Dashboard" />
+
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="rounded-2xl bg-white p-6 shadow-md dark:bg-gray-900">
-            <h1 class="mb-4 text-2xl font-bold text-[#003366]">
-                📅 Partidos de la Liga
-            </h1>
-            <div class="space-y-4">
-                <div
-                    v-for="partido in partidos"
-                    :key="partido.id"
-                    class="flex items-center justify-between rounded-lg border-l-4 p-4 shadow-sm"
-                    :class="{
-                        'border-green-500 bg-green-50 dark:bg-green-900/30':
-                            partido.estado === 'Finalizado',
-                        'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/30':
-                            partido.estado === 'En espera',
-                        'border-blue-500 bg-blue-50 dark:bg-blue-900/30':
-                            partido.estado === 'Jugando',
-                    }"
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+            <div class="rounded-xl bg-white p-6 shadow dark:bg-gray-900">
+                <h3
+                    class="text-lg font-semibold text-gray-600 dark:text-gray-300"
                 >
-                    <span
-                        class="font-semibold text-gray-800 dark:text-gray-100"
-                    >
-                        {{ partido.equipoA }} vs {{ partido.equipoB }}
-                    </span>
-                    <span
-                        class="text-sm font-medium text-gray-500 dark:text-gray-300"
-                    >
-                        {{ partido.estado }} — <b>{{ partido.marcador }}</b>
-                    </span>
-                </div>
+                    Equipos
+                </h3>
+                <p class="text-3xl font-bold text-[#003366]">
+                    {{ props.totalTeams }}
+                </p>
+            </div>
+
+            <div class="rounded-xl bg-white p-6 shadow dark:bg-gray-900">
+                <h3
+                    class="text-lg font-semibold text-gray-600 dark:text-gray-300"
+                >
+                    Jugadores
+                </h3>
+                <p class="text-3xl font-bold text-[#003366]">
+                    {{ props.totalPlayers }}
+                </p>
+            </div>
+
+            <div class="rounded-xl bg-white p-6 shadow dark:bg-gray-900">
+                <h3
+                    class="text-lg font-semibold text-gray-600 dark:text-gray-300"
+                >
+                    Partidos
+                </h3>
+                <p class="text-3xl font-bold text-[#003366]">
+                    {{ props.totalMatches }}
+                </p>
+            </div>
+
+            <div class="rounded-xl bg-white p-6 shadow dark:bg-gray-900">
+                <h3
+                    class="text-lg font-semibold text-gray-600 dark:text-gray-300"
+                >
+                    Goles
+                </h3>
+                <p class="text-3xl font-bold text-[#003366]">
+                    {{ props.totalGoals }}
+                </p>
             </div>
         </div>
     </AppLayout>

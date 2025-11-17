@@ -11,7 +11,7 @@ import { Link } from '@inertiajs/vue3';
 const sidebarNavItems: NavItem[] = [
     { title: 'Perfil', href: edit() },
     { title: 'Contraseña', href: editPassword() },
-    { title: 'Apariencia', href: appearance() },
+    // { title: 'Apariencia', href: appearance() },
 ];
 
 const currentPath =

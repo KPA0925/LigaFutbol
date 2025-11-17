@@ -14,25 +14,42 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Contadores globales
-        $totalPlayers = Player::count();
-        $totalTeams = Team::count();
-        $totalGoals = Goal::count();
-        $totalComments = Comment::count();
-        $totalMatches = FootballMatch::count();
+        /*
+        |--------------------------------------------------------------------------
+        | 1. Contadores globales
+        |--------------------------------------------------------------------------
+        */
+        $stats = [
+            'players'  => Player::count(),
+            'teams'    => Team::count(),
+            'goals'    => Goal::count(),
+            'comments' => Comment::count(),
+            'matches'  => FootballMatch::count(),
+        ];
 
-        // Goles por jugador (para gráfico)
+        /*
+        |--------------------------------------------------------------------------
+        | 2. Máximos goleadores (Top 5)
+        |--------------------------------------------------------------------------
+        */
         $topScorers = Player::withCount('goals')
             ->orderByDesc('goals_count')
             ->take(5)
             ->get(['id', 'fullname', 'goals_count']);
 
-        // Goles por equipo
+        /*
+        |--------------------------------------------------------------------------
+        | 3. Goles por equipo (Top 5)
+        |--------------------------------------------------------------------------
+        |
+        | Se toma cada equipo, se suman los goles de sus jugadores.
+        |
+        */
         $teamGoals = Team::with(['players.goals'])
             ->get()
             ->map(function ($team) {
                 return [
-                    'team' => $team->name,
+                    'team'  => $team->name,
                     'goals' => $team->players->sum(fn($p) => $p->goals->count()),
                 ];
             })
@@ -40,16 +57,34 @@ class DashboardController extends Controller
             ->take(5)
             ->values();
 
+        /*
+        |--------------------------------------------------------------------------
+        | 4. Estadios y partidos jugados allí
+        |--------------------------------------------------------------------------
+        |
+        | Como no existe un campo "stadium" en la tabla matches:
+        | Se considera que el partido se juega en el estadio del equipo local.
+        |
+        */
+        $stadiumMatches = FootballMatch::with('homeTeam')
+            ->get()
+            ->groupBy(fn($m) => $m->homeTeam?->stadium ?? 'Estadio desconocido')
+            ->map(fn($group, $stadium) => [
+                'stadium' => $stadium,
+                'matches' => $group->count(),
+            ])
+            ->values();
+
+        /*
+        |--------------------------------------------------------------------------
+        | 5. Retornar dashboard
+        |--------------------------------------------------------------------------
+        */
         return Inertia::render('admin/dashboard/Index', [
-            'stats' => [
-                'players' => $totalPlayers,
-                'teams' => $totalTeams,
-                'goals' => $totalGoals,
-                'comments' => $totalComments,
-                'matches' => $totalMatches,
-            ],
-            'topScorers' => $topScorers,
-            'teamGoals' => $teamGoals,
+            'stats'          => $stats,
+            'topScorers'     => $topScorers,
+            'teamGoals'      => $teamGoals,
+            'stadiumMatches' => $stadiumMatches,
         ]);
     }
 }

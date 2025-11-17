@@ -22,53 +22,94 @@ function submit() {
 
 <template>
     <Head title="Nuevo Jugador" />
+
     <AppLayout>
-        <div class="mx-auto max-w-xl p-6">
-            <h1 class="mb-4 text-2xl font-bold">➕ Registrar Jugador</h1>
+        <div class="flex justify-center py-10">
+            <div
+                class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
+            >
+                <!-- Título -->
+                <h2 class="mb-1 text-2xl font-semibold text-gray-800">
+                    Crear Nuevo Jugador
+                </h2>
+                <p class="mb-6 text-gray-500">
+                    Ingrese los datos del nuevo jugador.
+                </p>
 
-            <form @submit.prevent="submit" class="space-y-4">
-                <div>
-                    <Label>Nombre Completo</Label>
-                    <Input v-model="form.fullname" required />
-                </div>
+                <form @submit.prevent="submit" class="space-y-5">
+                    <!-- Nombre -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Nombre Completo</Label>
+                        <Input
+                            v-model="form.fullname"
+                            placeholder="Ej: Juan Pérez"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <div>
-                    <Label>Fecha de Nacimiento</Label>
-                    <Input type="date" v-model="form.birth_date" required />
-                </div>
+                    <!-- Fecha nacimiento -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Fecha de Nacimiento</Label>
+                        <Input
+                            type="date"
+                            v-model="form.birth_date"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <div>
-                    <Label>Posición</Label>
-                    <Input v-model="form.position" required />
-                </div>
+                    <!-- Posición -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Posición</Label>
+                        <Input
+                            v-model="form.position"
+                            placeholder="Ej: Delantero"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <div>
-                    <Label>Equipo</Label>
-                    <select
-                        v-model="form.id_team"
-                        class="w-full rounded border p-2"
-                        required
-                    >
-                        <option value="">Seleccione un equipo</option>
-                        <option
-                            v-for="team in teams"
-                            :key="team.id"
-                            :value="team.id"
+                    <!-- Equipo -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Equipo</Label>
+                        <select
+                            v-model="form.id_team"
+                            class="h-11 rounded-lg border border-gray-300 px-3 text-gray-700 focus:border-blue-500 focus:outline-none"
+                            required
                         >
-                            {{ team.name }}
-                        </option>
-                    </select>
-                </div>
+                            <option value="">Seleccione un equipo</option>
+                            <option
+                                v-for="team in teams"
+                                :key="team.id"
+                                :value="team.id"
+                            >
+                                {{ team.name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <div class="flex justify-end gap-2 pt-4">
-                    <Link :href="route('admin.players.index')">
-                        <Button variant="outline">Cancelar</Button>
-                    </Link>
-                    <Button type="submit" :disabled="form.processing"
-                        >Guardar</Button
-                    >
-                </div>
-            </form>
+                    <!-- Botones -->
+                    <div class="flex justify-end gap-3 pt-3">
+                        <Link :href="route('admin.players.index')">
+                            <Button
+                                variant="outline"
+                                class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                            >
+                                Cancelar
+                            </Button>
+                        </Link>
+
+                        <Button
+                            type="submit"
+                            :disabled="form.processing"
+                            class="px-4 py-2 bg-[#D62027] text-white"
+                        >
+                            Guardar
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </div>
     </AppLayout>
 </template>

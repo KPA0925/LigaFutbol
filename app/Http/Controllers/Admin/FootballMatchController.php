@@ -60,7 +60,6 @@ class FootballMatchController extends Controller
 
         $pivot = FootballMatchTeam::where('id_match', $id)->first();
 
-        // Formatear fecha para input datetime-local
         $match->match_date_time_formatted = date('Y-m-d\TH:i', strtotime($match->match_date_time));
 
         return Inertia::render('admin/Matches/Edit', [

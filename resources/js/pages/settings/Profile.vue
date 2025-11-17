@@ -17,6 +17,7 @@ import { type BreadcrumbItem } from '@/types';
 interface Props {
     mustVerifyEmail: boolean;
     status?: string;
+    email_changed?: boolean;
 }
 
 defineProps<Props>();
@@ -30,6 +31,8 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 const page = usePage();
 const user = page.props.auth.user;
+
+const emailChanged = page.props.email_changed;
 </script>
 
 <template>
@@ -38,9 +41,25 @@ const user = page.props.auth.user;
 
         <SettingsLayout>
             <div class="flex flex-col space-y-6">
-                <HeadingSmall title="Información del Perfil" description="Actualiza tu nombre y dirección de correo electrónico" />
+                <HeadingSmall
+                    title="Información del Perfil"
+                    description="Actualiza tu nombre y dirección de correo electrónico"
+                />
 
-                <Form v-bind="ProfileController.update.form()" class="space-y-6" v-slot="{ errors, processing, recentlySuccessful }">
+                <!-- MENSAJE CUANDO SE CAMBIA EL CORREO -->
+                <div
+                    v-if="emailChanged"
+                    class="p-3 rounded-md bg-yellow-100 text-yellow-800 border border-yellow-300 text-sm"
+                >
+                    Has cambiado tu correo electrónico. Cuando vuelvas a iniciar sesión deberás
+                    verificar tu nuevo correo.
+                </div>
+
+                <Form
+                    v-bind="ProfileController.update.form()"
+                    class="space-y-6"
+                    v-slot="{ errors, processing, recentlySuccessful }"
+                >
                     <div class="grid gap-2">
                         <Label for="name">Nombre</Label>
                         <Input
@@ -76,14 +95,18 @@ const user = page.props.auth.user;
                             <Link
                                 :href="send()"
                                 as="button"
-                                class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current dark:decoration-neutral-500"
                             >
                                 Haga clic aquí para reenviar el correo electrónico de verificación.
                             </Link>
                         </p>
 
-                        <div v-if="status === 'verification-link-sent'" class="mt-2 text-sm font-medium text-green-600">
-                            Se ha enviado un nuevo enlace de verificación a su dirección de correo electrónico.
+                        <div
+                            v-if="status === 'verification-link-sent'"
+                            class="mt-2 text-sm font-medium text-green-600"
+                        >
+                            Se ha enviado un nuevo enlace de verificación a su dirección de correo
+                            electrónico.
                         </div>
                     </div>
 
@@ -96,7 +119,9 @@ const user = page.props.auth.user;
                             leave-active-class="transition ease-in-out"
                             leave-to-class="opacity-0"
                         >
-                            <p v-show="recentlySuccessful" class="text-sm text-neutral-600">Guardado.</p>
+                            <p v-show="recentlySuccessful" class="text-sm text-neutral-600">
+                                Guardado.
+                            </p>
                         </Transition>
                     </div>
                 </Form>

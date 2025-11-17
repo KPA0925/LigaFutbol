@@ -4,11 +4,9 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItemType } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 
@@ -55,13 +53,6 @@ const user = page.props.auth?.user;
                 align="end"
                 class="w-64 bg-white p-2 rounded-xl shadow-md border border-[#003366]/20"
             >
-                <DropdownMenuLabel
-                    class="text-sm font-medium text-gray-700 whitespace-normal break-words leading-snug"
-                >
-                    {{ user?.email }}
-                </DropdownMenuLabel>
-
-                <DropdownMenuSeparator />
 
                 <DropdownMenuItem>
                     <Link

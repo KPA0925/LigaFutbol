@@ -28,71 +28,99 @@ function submit() {
 
 <template>
     <Head title="Editar Partido" />
+
     <AppLayout>
-        <div class="mx-auto max-w-xl p-6">
-            <h1 class="mb-6 text-2xl font-bold">✏️ Editar Partido</h1>
+        <div class="flex justify-center py-10">
+            <div
+                class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
+            >
+                <!-- Título -->
+                <h2 class="mb-1 text-2xl font-semibold text-gray-800">
+                    Editar Partido
+                </h2>
+                <p class="mb-6 text-gray-500">
+                    Modifique los datos del partido seleccionado.
+                </p>
 
-            <form @submit.prevent="submit" class="space-y-4">
-                <!-- FECHA Y HORA -->
-                <div>
-                    <Label>Fecha y Hora</Label>
-                    <Input
-                        type="datetime-local"
-                        v-model="form.match_date_time"
-                        required
-                    />
-                </div>
+                <form @submit.prevent="submit" class="space-y-5">
+                    <!-- FECHA Y HORA -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Fecha y Hora</Label>
+                        <Input
+                            type="datetime-local"
+                            v-model="form.match_date_time"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <!-- TEMPORADA -->
-                <div>
-                    <Label>Temporada</Label>
-                    <Input v-model="form.season" required />
-                </div>
+                    <!-- TEMPORADA -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Temporada</Label>
+                        <Input
+                            v-model="form.season"
+                            placeholder="Ej: 2024"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <!-- EQUIPO LOCAL -->
-                <div>
-                    <Label>Equipo Local</Label>
-                    <select
-                        v-model="form.id_home_team"
-                        class="w-full rounded border p-2"
-                        required
-                    >
-                        <option
-                            v-for="team in teams"
-                            :key="team.id"
-                            :value="team.id"
+                    <!-- EQUIPO LOCAL -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Equipo Local</Label>
+                        <select
+                            v-model="form.id_home_team"
+                            class="h-11 rounded-lg border border-gray-300 px-3 text-gray-700 focus:border-blue-500 focus:outline-none"
+                            required
                         >
-                            {{ team.name }}
-                        </option>
-                    </select>
-                </div>
+                            <option
+                                v-for="team in teams"
+                                :key="team.id"
+                                :value="team.id"
+                            >
+                                {{ team.name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <!-- EQUIPO VISITANTE -->
-                <div>
-                    <Label>Equipo Visitante</Label>
-                    <select
-                        v-model="form.id_away_team"
-                        class="w-full rounded border p-2"
-                        required
-                    >
-                        <option
-                            v-for="team in teams"
-                            :key="team.id"
-                            :value="team.id"
+                    <!-- EQUIPO VISITANTE -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Equipo Visitante</Label>
+                        <select
+                            v-model="form.id_away_team"
+                            class="h-11 rounded-lg border border-gray-300 px-3 text-gray-700 focus:border-blue-500 focus:outline-none"
+                            required
                         >
-                            {{ team.name }}
-                        </option>
-                    </select>
-                </div>
+                            <option
+                                v-for="team in teams"
+                                :key="team.id"
+                                :value="team.id"
+                            >
+                                {{ team.name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <!-- BOTONES -->
-                <div class="flex justify-end gap-2 pt-4">
-                    <Link :href="route('admin.matches.index')">
-                        <Button variant="outline">Cancelar</Button>
-                    </Link>
-                    <Button :disabled="form.processing">Actualizar</Button>
-                </div>
-            </form>
+                    <!-- BOTONES -->
+                    <div class="flex justify-end gap-3 pt-3">
+                        <Link :href="route('admin.matches.index')">
+                            <Button
+                                variant="outline"
+                                class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                            >
+                                Cancelar
+                            </Button>
+                        </Link>
+
+                        <Button
+                            :disabled="form.processing"
+                            class="px-4 py-2 bg-[#D62027] text-white"
+                        >
+                            Actualizar
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </div>
     </AppLayout>
 </template>

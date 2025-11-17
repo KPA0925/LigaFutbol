@@ -7,7 +7,6 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { route } from 'ziggy-js';
 
-// ⬅️ ESTA LÍNEA ES CLAVE
 const props = defineProps<{ players: any[]; matches: any[] }>();
 
 const form = useForm({
@@ -18,9 +17,9 @@ const form = useForm({
     description: '',
 });
 
-const selectedMatchData = computed(() => {
-    return props.matches.find((m) => m.id === Number(form.id_match));
-});
+const selectedMatchData = computed(() =>
+    props.matches.find((m) => m.id === Number(form.id_match)),
+);
 
 const availableTeams = computed(() => {
     if (!selectedMatchData.value) return [];
@@ -28,10 +27,9 @@ const availableTeams = computed(() => {
     return [home_team, away_team].filter(Boolean);
 });
 
-const availablePlayers = computed(() => {
-    if (!form.id_team) return [];
-    return props.players.filter((p) => p.id_team === Number(form.id_team));
-});
+const availablePlayers = computed(() =>
+    props.players.filter((p) => p.id_team === Number(form.id_team)),
+);
 
 function submit() {
     form.post(route('admin.goals.store'));
@@ -40,95 +38,124 @@ function submit() {
 
 <template>
     <Head title="Registrar Gol" />
+
     <AppLayout>
-        <div class="mx-auto max-w-xl p-6">
-            <h1 class="mb-4 text-2xl font-bold">➕ Registrar Gol</h1>
+        <div class="flex justify-center py-10">
+            <div
+                class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
+            >
+                <!-- Título -->
+                <h2 class="mb-1 text-2xl font-semibold text-gray-800">
+                    Registrar Gol
+                </h2>
+                <p class="mb-6 text-gray-500">
+                    Complete la información del gol registrado en el partido.
+                </p>
 
-            <form @submit.prevent="submit" class="space-y-4">
-                <!-- Partido -->
-                <div>
-                    <Label>Partido</Label>
-                    <select
-                        v-model="form.id_match"
-                        class="w-full rounded border p-2"
-                        required
-                    >
-                        <option value="">Seleccione un partido</option>
-                        <option v-for="m in matches" :key="m.id" :value="m.id">
-                            {{ m.season }} - {{ m.match_date_time }} |
-                            {{ m.home_team?.name }} vs {{ m.away_team?.name }}
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Equipo -->
-                <div v-if="form.id_match">
-                    <Label>Equipo</Label>
-                    <select
-                        v-model="form.id_team"
-                        class="w-full rounded border p-2"
-                        required
-                    >
-                        <option value="">Seleccione un equipo</option>
-                        <option
-                            v-for="t in availableTeams"
-                            :key="t?.id"
-                            :value="t?.id"
+                <form @submit.prevent="submit" class="space-y-5">
+                    <!-- Partido -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Partido</Label>
+                        <select
+                            v-model="form.id_match"
+                            class="h-11 rounded-lg border border-gray-300 bg-white px-3 text-gray-700 focus:border-blue-500"
+                            required
                         >
-                            {{ t?.name }}
-                        </option>
-                    </select>
-                </div>
+                            <option value="">Seleccione un partido</option>
+                            <option
+                                v-for="m in props.matches"
+                                :key="m.id"
+                                :value="m.id"
+                            >
+                                {{ m.season }} — {{ m.match_date_time }} |
+                                {{ m.home_team?.name }} vs
+                                {{ m.away_team?.name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <!-- Jugador -->
-                <div v-if="form.id_team">
-                    <Label>Jugador</Label>
-                    <select
-                        v-model="form.id_player"
-                        class="w-full rounded border p-2"
-                        required
-                    >
-                        <option value="">Seleccione un jugador</option>
-                        <option
-                            v-for="p in availablePlayers"
-                            :key="p.id"
-                            :value="p.id"
+                    <!-- Equipo -->
+                    <div class="flex flex-col gap-1" v-if="form.id_match">
+                        <Label class="text-gray-700">Equipo</Label>
+                        <select
+                            v-model="form.id_team"
+                            class="h-11 rounded-lg border border-gray-300 bg-white px-3 text-gray-700 focus:border-blue-500"
+                            required
                         >
-                            {{ p.fullname }}
-                        </option>
-                    </select>
-                </div>
+                            <option value="">Seleccione un equipo</option>
+                            <option
+                                v-for="t in availableTeams"
+                                :key="t?.id"
+                                :value="t?.id"
+                            >
+                                {{ t?.name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <!-- Minuto -->
-                <div v-if="form.id_player">
-                    <Label>Minuto</Label>
-                    <Input
-                        type="number"
-                        v-model="form.minute"
-                        min="1"
-                        max="120"
-                        required
-                    />
-                </div>
+                    <!-- Jugador -->
+                    <div class="flex flex-col gap-1" v-if="form.id_team">
+                        <Label class="text-gray-700">Jugador</Label>
+                        <select
+                            v-model="form.id_player"
+                            class="h-11 rounded-lg border border-gray-300 bg-white px-3 text-gray-700 focus:border-blue-500"
+                            required
+                        >
+                            <option value="">Seleccione un jugador</option>
+                            <option
+                                v-for="p in availablePlayers"
+                                :key="p.id"
+                                :value="p.id"
+                            >
+                                {{ p.fullname }}
+                            </option>
+                        </select>
+                    </div>
 
-                <!-- Descripción -->
-                <div>
-                    <Label>Descripción</Label>
-                    <Input
-                        v-model="form.description"
-                        placeholder="Ej: Gol de tiro libre"
-                    />
-                </div>
+                    <!-- Minuto -->
+                    <div class="flex flex-col gap-1" v-if="form.id_player">
+                        <Label class="text-gray-700">Minuto</Label>
+                        <Input
+                            type="number"
+                            v-model="form.minute"
+                            min="1"
+                            max="120"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                <div class="flex justify-end gap-2 pt-4">
-                    <Link :href="route('admin.goals.index')">
-                        <Button variant="outline">Cancelar</Button>
-                    </Link>
-                    <Button type="submit" :disabled="form.processing">
-                        Guardar
-                    </Button>
-                </div>
-            </form>
+                    <!-- Descripción -->
+                    <div class="flex flex-col gap-1">
+                        <Label class="text-gray-700">Descripción</Label>
+                        <Input
+                            v-model="form.description"
+                            placeholder="Ej: Gol de tiro libre"
+                            class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
+                        />
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="flex justify-end gap-3 pt-3">
+                        <Link :href="route('admin.goals.index')">
+                            <Button
+                                variant="outline"
+                                class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                            >
+                                Cancelar
+                            </Button>
+                        </Link>
+
+                        <Button
+                            type="submit"
+                            class="px-4 py-2 bg-[#D62027] text-white"
+                            :disabled="form.processing"
+                        >
+                            Guardar
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </div>
     </AppLayout>
 </template>
