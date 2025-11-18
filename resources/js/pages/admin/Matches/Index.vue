@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
+import { type BreadcrumbItem } from '@/types';
 
 interface Team {
     name: string;
@@ -65,12 +66,16 @@ function destroyMatch(id: number) {
         router.delete(route('admin.matches.destroy', id));
     }
 }
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Partidos', href: route('admin.matches.index') },
+];
 </script>
 
 <template>
     <Head title="Partidos" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
             <!-- 🧭 Encabezado -->
             <div class="flex items-center justify-between">

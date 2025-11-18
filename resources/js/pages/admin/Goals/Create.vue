@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { route } from 'ziggy-js';
+import { type BreadcrumbItem } from '@/types';
 
 const props = defineProps<{ players: any[]; matches: any[] }>();
 
@@ -34,12 +35,17 @@ const availablePlayers = computed(() =>
 function submit() {
     form.post(route('admin.goals.store'));
 }
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Goles', href: route('admin.goals.index') },
+    { title: 'Registrar Gol', href: '' },
+];
 </script>
 
 <template>
     <Head title="Registrar Gol" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex justify-center py-10">
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"

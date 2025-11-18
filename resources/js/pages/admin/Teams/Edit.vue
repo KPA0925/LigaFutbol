@@ -21,12 +21,17 @@ const form = useForm({
 function submit() {
     form.put(route('admin.teams.update', props.team.id));
 }
+
+const breadcrumbs = [
+    { title: 'Equipos', href: route('admin.teams.index') },
+    { title: 'Editar Equipo', href: '' },
+];
 </script>
 
 <template>
     <Head title="Editar Equipo" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex justify-center py-10">
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"

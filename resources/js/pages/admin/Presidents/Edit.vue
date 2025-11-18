@@ -31,12 +31,17 @@ const form = useForm({
 function submit() {
     form.put(route('admin.presidents.update', props.president.id));
 }
+
+const breadcrumbs = [
+    { title: 'Presidentes', href: route('admin.presidents.index') },
+    { title: 'Editar Presidente', href: '' },
+];
 </script>
 
 <template>
     <Head title="Editar Presidente" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex justify-center py-10">
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"

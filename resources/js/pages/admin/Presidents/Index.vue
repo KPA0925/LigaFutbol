@@ -67,12 +67,16 @@ function destroyPresident(id: number) {
         router.delete(route('admin.presidents.destroy', id));
     }
 }
+
+const breadcrumbs = [
+    { title: 'Presidentes', href: route('admin.presidents.index') },
+];
 </script>
 
 <template>
     <Head title="Presidentes" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
             <!-- 🧭 Encabezado -->
             <div class="flex items-center justify-between">

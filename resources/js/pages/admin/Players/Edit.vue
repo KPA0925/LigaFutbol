@@ -23,12 +23,17 @@ const form = useForm({
 function submit() {
     form.put(route('admin.players.update', props.player.id));
 }
+
+const breadcrumbs = [
+    { title: 'Jugadores', href: route('admin.players.index') },
+    { title: 'Editar Jugador', href: '' },
+];
 </script>
 
 <template>
     <Head title="Editar Jugador" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex justify-center py-10">
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"

@@ -1,28 +1,38 @@
 <script setup lang="ts">
-import AppContent from '@/components/AppContent.vue';
-import AppShell from '@/components/AppShell.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
+import AppContent from '@/components/AppContent.vue';
 import type { BreadcrumbItemType } from '@/types';
 
-interface Props {
-    breadcrumbs?: BreadcrumbItemType[];
-}
-
-withDefaults(defineProps<Props>(), {
-    breadcrumbs: () => [],
-});
+withDefaults(
+    defineProps<{
+        breadcrumbs?: BreadcrumbItemType[];
+    }>(),
+    {
+        breadcrumbs: () => [],
+    },
+);
 </script>
 
 <template>
-    <AppShell variant="sidebar">
+    <div class="flex h-screen w-full overflow-hidden bg-gray-50">
+        <!-- Sidebar fijo -->
         <AppSidebar />
-        <AppContent
-            variant="sidebar"
-            class="overflow-x-hidden bg-[#FFFFFF] text-[#003366]"
-        >
+
+        <!-- Contenedor principal con header y contenido -->
+        <div class="
+        flex flex-1 flex-col
+        absolute
+        w-full left-0        
+        md:w-[75%] lg:w-[83%] lg:left-[17%] md:left-[25%]
+    ">
+            <!-- Header fijo -->
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
-            <slot />
-        </AppContent>
-    </AppShell>
+
+            <!-- Contenido con scroll -->
+            <AppContent>
+                <slot />
+            </AppContent>
+        </div>
+    </div>
 </template>

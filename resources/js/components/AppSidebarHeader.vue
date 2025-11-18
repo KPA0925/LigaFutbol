@@ -25,9 +25,10 @@ const user = page.props.auth?.user;
 
 <template>
     <header
-        class="flex h-16 shrink-0 items-center justify-between border-b border-[#003366] bg-white px-6 text-[#003366] transition-colors"
+        class="fixed top-0 right-0 w-full left-0        
+        md:w-[75%] lg:w-[83%] lg:left-[17%] md:left-[25%] z-40 flex h-16 shrink-0 items-center justify-between border-b border-[#a6a6a6] bg-white px-6 text-[#003366] transition-colors"
     >
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 pl-14 md:pl-0">
             <template v-if="breadcrumbs && breadcrumbs.length > 0">
                 <Breadcrumbs :breadcrumbs="breadcrumbs" />
             </template>

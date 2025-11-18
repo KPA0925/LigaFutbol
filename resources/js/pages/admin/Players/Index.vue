@@ -70,12 +70,16 @@ function destroyPlayer(id: number) {
         router.delete(route('admin.players.destroy', id));
     }
 }
+
+const breadcrumbs = [
+    { title: 'Jugadores', href: route('admin.players.index') },
+];
 </script>
 
 <template>
     <Head title="Jugadores" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
             <!-- 🧭 Encabezado -->
             <div class="flex items-center justify-between">

@@ -18,12 +18,17 @@ const form = useForm({
 function submit() {
     form.post(route('admin.players.store'));
 }
+
+const breadcrumbs = [
+    { title: 'Jugadores', href: route('admin.players.index') },
+    { title: 'Crear Jugador', href: '' },
+];
 </script>
 
 <template>
     <Head title="Nuevo Jugador" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex justify-center py-10">
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"

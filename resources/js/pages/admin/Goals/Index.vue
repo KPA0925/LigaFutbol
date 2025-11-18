@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
+import { type BreadcrumbItem } from '@/types';
 
 /* ---------------------------------
    🔹 Tipos
@@ -81,12 +82,16 @@ function destroyGoal(id: number) {
         router.delete(route('admin.goals.destroy', id));
     }
 }
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Goles', href: route('admin.goals.index') },
+];
 </script>
 
 <template>
     <Head title="Goles" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
             <!-- 🧭 ENCABEZADO -->
             <div class="flex items-center justify-between">

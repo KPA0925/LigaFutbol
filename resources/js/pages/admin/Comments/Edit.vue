@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
+import { type BreadcrumbItem } from '@/types';
 
 const props = defineProps<{
     comment: any;
@@ -19,12 +20,17 @@ const form = useForm({
 function submit() {
     form.put(route('admin.comments.update', props.comment.id));
 }
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Comentarios', href: route('admin.comments.index') },
+    { title: 'Editar Comentario', href: '' },
+];
 </script>
 
 <template>
     <Head title="Editar Comentario" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex justify-center py-10">
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"

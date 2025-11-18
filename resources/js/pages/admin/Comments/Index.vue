@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
+import { type BreadcrumbItem } from '@/types';
 
 interface Comment {
     id: number;
@@ -73,12 +74,16 @@ function destroyComment(id: number) {
         router.delete(route('admin.comments.destroy', id));
     }
 }
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Comentarios', href: route('admin.comments.index') },
+];
 </script>
 
 <template>
     <Head title="Comentarios" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
             <!-- 🧭 Encabezado -->
             <div class="flex items-center justify-between">

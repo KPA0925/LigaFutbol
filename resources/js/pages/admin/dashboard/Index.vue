@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { dashboard } from '@/routes';
+import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
 import {
@@ -25,7 +27,6 @@ ChartJS.register(
     ArcElement,
 );
 
-// Props desde el backend
 const props = defineProps<{
     stats: {
         players: number;
@@ -39,53 +40,81 @@ const props = defineProps<{
     stadiumMatches: { stadium: string; matches: number }[];
 }>();
 
-// Goleadores
+const hueRanges = [
+    { min: 0, max: 20 }, // Rojos
+    { min: 20, max: 45 }, // Naranjas
+    { min: 190, max: 240 }, // Azules
+];
+
+function randomHue() {
+    const range = hueRanges[Math.floor(Math.random() * hueRanges.length)];
+    return Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+}
+
+function generateUniqueColors(count: number) {
+    const usedHues = new Set<number>();
+    const colors = [];
+
+    while (colors.length < count) {
+        const hue = randomHue();
+        if (!usedHues.has(hue)) {
+            usedHues.add(hue);
+            colors.push(`hsl(${hue}, 70%, 55%)`);
+        }
+    }
+
+    return colors;
+}
+
+const barColors = generateUniqueColors(props.topScorers.length);
+
 const topScorersData = {
     labels: props.topScorers.map((s) => s.fullname),
     datasets: [
         {
             label: 'Goles anotados',
             data: props.topScorers.map((s) => s.goals_count),
+            backgroundColor: barColors,
+            borderColor: '#003366',
+            borderWidth: 1,
         },
     ],
 };
 
-// Estadios
 const stadiumMatchesData = {
     labels: props.stadiumMatches.map((s) => s.stadium),
     datasets: [
         {
             label: 'Partidos jugados',
             data: props.stadiumMatches.map((s) => s.matches),
+            backgroundColor: barColors,
+            borderColor: '#003366',
+            borderWidth: 1,
         },
     ],
 };
 
-// Opciones de los gráficos
-const chartOptions = {
-    responsive: true,
-    plugins: {
-        legend: {
-            position: 'top',
-        },
-    },
-};
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Estadísticas', href: dashboard().url },
+];
 </script>
 
 <template>
     <Head title="Panel de Administración" />
 
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-10 p-6">
-            <!-- Título -->
-            <h1 class="text-3xl font-bold">📊 Dashboard del Sistema</h1>
+            <div class="flex items-center justify-between">
+                <h1 class="text-3xl font-bold">Estadísticas generales</h1>
 
-            <!-- MINI ESTADÍSTICAS -->
+                <Button class="px-4 py-2 bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-download"></i>Exportar Estadísticas</Button>
+            </div>
+
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 <Card
                     v-for="(value, key) in stats"
                     :key="key"
-                    class="text-center shadow-sm"
+                    class="bg-white text-center shadow-sm"
                 >
                     <CardContent class="p-3">
                         <h2 class="text-xs uppercase text-gray-500">
@@ -96,22 +125,20 @@ const chartOptions = {
                 </Card>
             </div>
 
-            <!-- SECCIÓN: GOLES Y QUIÉN LOS REALIZÓ -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <Card>
+                <Card class="bg-white">
                     <CardContent class="p-4">
                         <h2 class="mb-4 text-xl font-semibold">
-                            🏅 Goles anotados y quién los hizo
+                            Goles anotados y quién los hizo
                         </h2>
                         <Bar :data="topScorersData" />
                     </CardContent>
                 </Card>
 
-                <!-- Tabla clara -->
-                <Card>
-                    <CardContent class="p-4">
+                <Card class="bg-white">
+                    <CardContent class="bg-white p-4">
                         <h2 class="mb-4 text-xl font-semibold">
-                            📋 Lista de goleadores
+                            Lista de goleadores
                         </h2>
                         <table class="w-full rounded border text-sm">
                             <thead class="bg-gray-100">
@@ -137,24 +164,20 @@ const chartOptions = {
                 </Card>
             </div>
 
-            <!-- SECCIÓN: ESTADIOS -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <Card>
-                    <CardContent class="p-4">
+                <Card class="bg-white">
+                    <CardContent class="bg-white p-4">
                         <h2 class="mb-4 text-xl font-semibold">
-                            🏟️ Partidos jugados por estadio
+                            Partidos jugados por estadio
                         </h2>
-                        <Pie
-                            :data="stadiumMatchesData"
-                        />
+                        <Pie :data="stadiumMatchesData" />
                     </CardContent>
                 </Card>
 
-                <!-- Tabla estadios -->
-                <Card>
-                    <CardContent class="p-4">
+                <Card class="bg-white">
+                    <CardContent class="bg-white p-4">
                         <h2 class="mb-4 text-xl font-semibold">
-                            📋 Estadios y número de partidos
+                            Estadios y número de partidos
                         </h2>
 
                         <table class="w-full rounded border text-sm">
