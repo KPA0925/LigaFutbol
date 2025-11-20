@@ -18,7 +18,7 @@ use App\Http\Controllers\User\UserPresidentController;
 use App\Http\Controllers\User\UserMatchController;
 use App\Http\Controllers\User\UserGoalController;
 use App\Http\Controllers\User\UserCommentController;
-use App\Http\Controllers\User\UserReportController;
+use App\Http\Controllers\User\UserExportController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -34,6 +34,7 @@ Route::middleware(['auth', 'verified', 'role:user'])->prefix('user')->group(func
     Route::get('/goles', [UserGoalController::class, 'index'])->name('goals.index');
     Route::get('/comentarios', [UserCommentController::class, 'index'])->name('comments.index');
     Route::post('/comentarios', [UserCommentController::class, 'store'])->name('comments.store');
+    Route::get('/export', [UserExportController::class, 'export'])->name('export.excel');
 });
 
 Route::middleware(['auth', 'role:admin'])
@@ -48,7 +49,6 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('goals', GoalController::class)->names('goals');
         Route::resource('matches', FootballMatchController::class)->names('matches');
         Route::resource('comments', CommentController::class)->names('comments');
-
         Route::get('/export', [ExportController::class, 'export'])->name('export.excel');
     });
 

@@ -10,32 +10,27 @@ class UserMatchController extends Controller
 {
     public function index()
     {
-        $matches = FootballMatch::with(['homeTeam', 'awayTeam'])
+        $matches = FootballMatch::with([
+            'teamData',
+            'homeTeam',
+            'awayTeam',
+            'goals',
+        ])
             ->get()
-            ->map(function ($m) {
+            ->map(function ($match) {
                 return [
-                    'id' => $m->id,
-                    'equipoA' => $m->homeTeam?->name ?? 'N/A',
-                    'equipoB' => $m->awayTeam?->name ?? 'N/A',
-                    'marcador' => "{$m->goal_home} - {$m->goal_away}",
-                    'estado' => $this->status($m),
-                    'fecha' => $m->match_date_time,
+                    'id' => $match->id,
+                    'season' => $match->season,
+                    'match_date_time' => $match->match_date_time,
+                    'home_team' => $match->homeTeam,
+                    'away_team' => $match->awayTeam,
+                    'goal_home' => $match->homeGoals()->count(),
+                    'goal_away' => $match->awayGoals()->count(),
                 ];
             });
 
         return Inertia::render('user/Match', [
             'matches' => $matches,
         ]);
-    }
-
-    private function status($m)
-    {
-        if (!is_null($m->goal_home) && !is_null($m->goal_away)) {
-            return 'Finalizado';
-        }
-
-        return now()->lt($m->match_date_time)
-            ? 'En espera'
-            : 'Jugando';
     }
 }

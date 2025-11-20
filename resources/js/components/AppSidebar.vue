@@ -69,15 +69,17 @@ const defaultClass = 'hover:bg-[#B81E23] transition';
     <!-- Sidebar -->
     <aside
         :class="[
-            'fixed left-0 top-0 flex w-[60%] lg:w-[17%] md:w-[25%] flex-col justify-between overflow-hidden rounded-r-[50px] border-r-4 border-[#003366] bg-[#D62027] text-white shadow-lg transition-transform duration-300 z-50 h-screen',
+            'fixed left-0 top-0 z-50 flex h-screen w-[60%] flex-col justify-between overflow-hidden rounded-r-[50px] border-r-4 border-[#003366] bg-[#D62027] text-white shadow-lg transition-transform duration-300 md:w-[25%] lg:w-[17%]',
             // En móvil: oculto por defecto, visible cuando isMobileMenuOpen es true
-            isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+            isMobileMenuOpen
+                ? 'translate-x-0'
+                : '-translate-x-full md:translate-x-0',
         ]"
     >
         <!-- Botón cerrar (solo visible en móvil cuando el menú está abierto) -->
         <button
             @click="closeMobileMenu"
-            class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-lg  text-white md:hidden"
+            class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-lg text-white md:hidden"
             aria-label="Close menu"
         >
             <i class="fas fa-times text-xl"></i>
@@ -94,11 +96,11 @@ const defaultClass = 'hover:bg-[#B81E23] transition';
         <nav class="flex-1 space-y-2 overflow-y-auto px-4">
             <template v-if="isUser">
                 <Link
-                    href="/user/estadisticas"
+                    href="/user/dashboard"
                     @click="closeMobileMenu"
                     :class="[
                         'flex items-center gap-3 rounded-lg px-3 py-2',
-                        isActive('/user/estadisticas', true)
+                        isActive('/user/dashboard')
                             ? activeClass
                             : defaultClass,
                     ]"
@@ -108,13 +110,11 @@ const defaultClass = 'hover:bg-[#B81E23] transition';
                 </Link>
 
                 <Link
-                    href="/user/dashboard"
+                    href="/user/partidos"
                     @click="closeMobileMenu"
                     :class="[
                         'flex items-center gap-3 rounded-lg px-3 py-2',
-                        isActive('/user/dashboard')
-                            ? activeClass
-                            : defaultClass,
+                        isActive('/user/partidos') ? activeClass : defaultClass,
                     ]"
                 >
                     <i class="fas fa-futbol w-4"></i>

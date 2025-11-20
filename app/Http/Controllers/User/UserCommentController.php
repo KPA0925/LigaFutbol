@@ -12,8 +12,19 @@ class UserCommentController extends Controller
     public function index()
     {
         $comments = Comment::with('user')
-            ->orderBy('id', 'desc')
-            ->get();
+            ->orderBy('created_at', 'desc') // Cambiado de 'id' a 'created_at'
+            ->get()
+            ->map(function ($comment) {
+                return [
+                    'id' => $comment->id,
+                    'description' => $comment->description,
+                    'created_at' => $comment->created_at->toISOString(), // Añadido
+                    'user' => $comment->user ? [
+                        'id' => $comment->user->id,
+                        'name' => $comment->user->name,
+                    ] : null,
+                ];
+            });
 
         return Inertia::render('user/Comment', [
             'comments' => $comments,
