@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
@@ -7,7 +8,7 @@ import { route } from 'ziggy-js';
 
 interface President {
     id: number;
-    DNI: string;
+    dni: string;
     name: string;
     lastname: string;
     birth_date: string;
@@ -20,9 +21,9 @@ const props = defineProps<{
 }>();
 
 /* -------------------------
-   🟦 Filtros
+    🟦 Filtros inputs
 --------------------------*/
-const filterDNI = ref('');
+const filterDni = ref('');
 const filterName = ref('');
 const filterLastname = ref('');
 const filterBirth = ref('');
@@ -30,28 +31,90 @@ const filterElected = ref('');
 const filterTeam = ref('');
 
 /* -------------------------
-   🔍 Búsqueda y filtrado
+    🟦 Filtros aplicados (CONGELADOS)
+--------------------------*/
+const activeFilters = ref({
+    dni: '',
+    name: '',
+    lastname: '',
+    birth: '',
+    elected: '',
+    team: '',
+});
+
+const appliedFilters = ref(false);
+
+/* -------------------------
+   🔍 Lógica de filtrado usando activeFilters
 --------------------------*/
 const filtered = computed(() => {
-    return props.presidents.filter((p) => {
-        const text =
-            `${p.DNI} ${p.name} ${p.lastname} ${p.team?.name ?? ''} ${p.birth_date} ${p.elected_date}`.toLowerCase();
+    if (!appliedFilters.value) return props.presidents;
 
+    const f = activeFilters.value;
+
+    return props.presidents.filter((p) => {
         return (
-            text.includes(filterDNI.value.toLowerCase()) &&
-            text.includes(filterName.value.toLowerCase()) &&
-            text.includes(filterLastname.value.toLowerCase()) &&
-            text.includes(filterBirth.value.toLowerCase()) &&
-            text.includes(filterElected.value.toLowerCase()) &&
-            text.includes(filterTeam.value.toLowerCase())
+            (f.dni === '' || p.dni.includes(f.dni)) &&
+            (f.name === '' ||
+                p.name.toLowerCase().includes(f.name.toLowerCase())) &&
+            (f.lastname === '' ||
+                p.lastname.toLowerCase().includes(f.lastname.toLowerCase())) &&
+            (f.birth === '' || p.birth_date === f.birth) &&
+            (f.elected === '' || p.elected_date === f.elected) &&
+            (f.team === '' ||
+                (p.team?.name ?? '')
+                    .toLowerCase()
+                    .includes(f.team.toLowerCase()))
         );
     });
 });
 
 /* -------------------------
+   🔘 Botón Buscar → congela filtros
+--------------------------*/
+function applyFilters() {
+    appliedFilters.value = true;
+
+    activeFilters.value = {
+        dni: filterDni.value,
+        name: filterName.value,
+        lastname: filterLastname.value,
+        birth: filterBirth.value,
+        elected: filterElected.value,
+        team: filterTeam.value,
+    };
+
+    currentPage.value = 1;
+}
+
+/* -------------------------
+   ♻ Limpiar filtros (todo vuelve al inicio)
+--------------------------*/
+function clearFilters() {
+    filterDni.value = '';
+    filterName.value = '';
+    filterLastname.value = '';
+    filterBirth.value = '';
+    filterElected.value = '';
+    filterTeam.value = '';
+
+    activeFilters.value = {
+        dni: '',
+        name: '',
+        lastname: '',
+        birth: '',
+        elected: '',
+        team: '',
+    };
+
+    appliedFilters.value = false;
+    currentPage.value = 1;
+}
+
+/* -------------------------
    📄 Paginación
 --------------------------*/
-const itemsPerPage = 10;
+const itemsPerPage = 5;
 const currentPage = ref(1);
 
 const paginated = computed(() => {
@@ -60,12 +123,25 @@ const paginated = computed(() => {
 });
 
 /* -------------------------
-   ❌ Eliminar
+   ❌ Modal de eliminación
 --------------------------*/
-function destroyPresident(id: number) {
-    if (confirm('¿Seguro que deseas eliminar este presidente?')) {
-        router.delete(route('admin.presidents.destroy', id));
+const showDeleteModal = ref(false);
+const selectedId = ref<number | null>(null);
+
+function openDeleteModal(id: number) {
+    selectedId.value = id;
+    showDeleteModal.value = true;
+}
+
+function confirmDelete() {
+    if (selectedId.value) {
+        router.delete(route('admin.presidents.destroy', selectedId.value));
     }
+    showDeleteModal.value = false;
+}
+
+function cancelDelete() {
+    showDeleteModal.value = false;
 }
 
 const breadcrumbs = [
@@ -85,11 +161,13 @@ const breadcrumbs = [
                 </h1>
 
                 <Link :href="route('admin.presidents.create')">
-                    <Button class="px-4 py-2  bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-circle-plus"></i>Crear</Button>
+                    <Button class="bg-[#D62027] px-4 py-2 text-white">
+                        <i class="fa-solid fa-circle-plus"></i> Crear
+                    </Button>
                 </Link>
             </div>
 
-            <!-- 🔍 Card de Filtros -->
+            <!-- 🔍 Filtros -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
@@ -103,8 +181,8 @@ const breadcrumbs = [
                             >DNI</label
                         >
                         <input
-                            v-model="filterDNI"
-                            type="text"
+                            v-model="filterDni"
+                            type="number"
                             placeholder="Buscar por DNI"
                             class="mt-1 w-full rounded-lg border-gray-300 p-2"
                         />
@@ -140,8 +218,7 @@ const breadcrumbs = [
                         >
                         <input
                             v-model="filterBirth"
-                            type="text"
-                            placeholder="Buscar por fecha"
+                            type="date"
                             class="mt-1 w-full rounded-lg border-gray-300 p-2"
                         />
                     </div>
@@ -152,8 +229,7 @@ const breadcrumbs = [
                         >
                         <input
                             v-model="filterElected"
-                            type="text"
-                            placeholder="Buscar por fecha"
+                            type="date"
                             class="mt-1 w-full rounded-lg border-gray-300 p-2"
                         />
                     </div>
@@ -174,25 +250,23 @@ const breadcrumbs = [
                 <!-- Botones -->
                 <div class="mt-6 flex gap-3">
                     <Button
-                    class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                        class="border-[#D62027] px-4 py-2 text-[#D62027]"
                         variant="outline"
-                        @click="
-                            filterDNI = '';
-                            filterName = '';
-                            filterLastname = '';
-                            filterBirth = '';
-                            filterElected = '';
-                            filterTeam = '';
-                        "
+                        @click="clearFilters"
                     >
                         Limpiar
                     </Button>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" ><i class="fa-solid fa-magnifying-glass"></i>Buscar</Button>
+                    <Button
+                        class="bg-[#D62027] px-4 py-2 text-white"
+                        @click="applyFilters"
+                    >
+                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                    </Button>
                 </div>
             </div>
 
-            <!-- 📋 Card Listado -->
+            <!-- 📋 Listado -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
@@ -201,7 +275,24 @@ const breadcrumbs = [
                         Listado de presidentes
                     </h2>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-download"></i>Descargar Excel</Button>
+                    <a
+                        :href="
+                            route('admin.export.excel', {
+                                module: 'presidents',
+                                dni: activeFilters.dni || undefined,
+                                name: activeFilters.name || undefined,
+                                lastname: activeFilters.lastname || undefined,
+                                birth: activeFilters.birth || undefined,
+                                elected: activeFilters.elected || undefined,
+                                team: activeFilters.team || undefined,
+                            })
+                        "
+                        target="_blank"
+                    >
+                        <Button class="bg-[#D62027] px-4 py-2 text-white">
+                            <i class="fa-solid fa-download"></i> Exportar Excel
+                        </Button>
+                    </a>
                 </div>
 
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
@@ -210,6 +301,7 @@ const breadcrumbs = [
                             <tr class="bg-gray-100 text-sm text-gray-700">
                                 <th class="p-3">DNI</th>
                                 <th class="p-3">Nombre</th>
+                                <th class="p-3">Apellido</th>
                                 <th class="p-3">Nacimiento</th>
                                 <th class="p-3">Elegido</th>
                                 <th class="p-3">Equipo</th>
@@ -223,12 +315,17 @@ const breadcrumbs = [
                                 :key="p.id"
                                 class="border-t hover:bg-gray-50"
                             >
-                                <td class="p-3 text-center">{{ p.DNI }}</td>
+                                <td class="p-3 text-center">{{ p.dni }}</td>
+                                <td class="p-3 text-center">{{ p.name }}</td>
                                 <td class="p-3 text-center">
-                                    {{ p.name }} {{ p.lastname }}
+                                    {{ p.lastname }}
                                 </td>
-                                <td class="p-3 text-center">{{ p.birth_date }}</td>
-                                <td class="p-3 text-center">{{ p.elected_date }}</td>
+                                <td class="p-3 text-center">
+                                    {{ p.birth_date }}
+                                </td>
+                                <td class="p-3 text-center">
+                                    {{ p.elected_date }}
+                                </td>
                                 <td class="p-3 text-center">
                                     {{ p.team?.name ?? 'Sin asignar' }}
                                 </td>
@@ -239,14 +336,16 @@ const breadcrumbs = [
                                             route('admin.presidents.edit', p.id)
                                         "
                                     >
-                                        <Button size="sm"
-                                            ><i class="fa-regular fa-pen-to-square"></i></Button
-                                        >
+                                        <Button size="sm">
+                                            <i
+                                                class="fa-regular fa-pen-to-square"
+                                            ></i>
+                                        </Button>
                                     </Link>
 
                                     <Button
                                         size="sm"
-                                        @click="destroyPresident(p.id)"
+                                        @click="openDeleteModal(p.id)"
                                     >
                                         <i class="fa-solid fa-delete-left"></i>
                                     </Button>
@@ -255,7 +354,7 @@ const breadcrumbs = [
 
                             <tr v-if="filtered.length === 0">
                                 <td
-                                    colspan="6"
+                                    colspan="7"
                                     class="p-6 text-center text-gray-500"
                                 >
                                     No hay resultados.
@@ -280,9 +379,8 @@ const breadcrumbs = [
                             variant="outline"
                             :disabled="currentPage === 1"
                             @click="currentPage--"
+                            >Anterior</Button
                         >
-                            Anterior
-                        </Button>
 
                         <Button
                             size="sm"
@@ -298,5 +396,14 @@ const breadcrumbs = [
                 </div>
             </div>
         </div>
+
+        <!-- 🌟 Modal de eliminación -->
+        <ConfirmDeleteModal
+            :show="showDeleteModal"
+            title="Eliminar presidente"
+            message="¿Seguro que deseas eliminar este presidente?"
+            @confirm="confirmDelete"
+            @cancel="cancelDelete"
+        />
     </AppLayout>
 </template>

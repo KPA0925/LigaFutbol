@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
-import { type BreadcrumbItem } from '@/types';
 
 defineProps<{
     teams: { id: number; name: string }[];
@@ -44,6 +44,14 @@ const breadcrumbs: BreadcrumbItem[] = [
                     Ingrese los datos del nuevo partido de la liga.
                 </p>
 
+                <!-- 🔴 Error global (por conflicto de horarios) -->
+                <div
+                    v-if="form.errors.match_date_time"
+                    class="mb-4 rounded-lg border border-red-300 bg-red-100 px-4 py-3 text-red-700"
+                >
+                    {{ form.errors.match_date_time }}
+                </div>
+
                 <form @submit.prevent="submit" class="space-y-5">
                     <!-- Fecha -->
                     <div class="flex flex-col gap-1">
@@ -54,6 +62,12 @@ const breadcrumbs: BreadcrumbItem[] = [
                             class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
                             required
                         />
+                        <p
+                            v-if="form.errors.match_date_time"
+                            class="text-sm text-red-600"
+                        >
+                            {{ form.errors.match_date_time }}
+                        </p>
                     </div>
 
                     <!-- Temporada -->
@@ -65,6 +79,12 @@ const breadcrumbs: BreadcrumbItem[] = [
                             class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
                             required
                         />
+                        <p
+                            v-if="form.errors.season"
+                            class="text-sm text-red-600"
+                        >
+                            {{ form.errors.season }}
+                        </p>
                     </div>
 
                     <!-- Local -->
@@ -80,6 +100,13 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 {{ team.name }}
                             </option>
                         </select>
+
+                        <p
+                            v-if="form.errors.id_home_team"
+                            class="text-sm text-red-600"
+                        >
+                            {{ form.errors.id_home_team }}
+                        </p>
                     </div>
 
                     <!-- Visitante -->
@@ -95,6 +122,13 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 {{ team.name }}
                             </option>
                         </select>
+
+                        <p
+                            v-if="form.errors.id_away_team"
+                            class="text-sm text-red-600"
+                        >
+                            {{ form.errors.id_away_team }}
+                        </p>
                     </div>
 
                     <!-- Botones -->
@@ -102,7 +136,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <Link :href="route('admin.matches.index')">
                             <Button
                                 variant="outline"
-                                class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                                class="border-[#D62027] px-4 py-2 text-[#D62027]"
                             >
                                 Cancelar
                             </Button>
@@ -110,7 +144,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
                         <Button
                             type="submit"
-                            class="px-4 py-2 bg-[#D62027] text-white"
+                            class="bg-[#D62027] px-4 py-2 text-white"
                         >
                             Guardar
                         </Button>

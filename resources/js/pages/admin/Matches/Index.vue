@@ -1,18 +1,18 @@
 <script setup lang="ts">
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
-import { type BreadcrumbItem } from '@/types';
 
 interface Team {
     name: string;
 }
-
 interface Match {
     id: number;
-    season: string;
+    season: number;
     match_date_time: string;
     home_team?: Team | null;
     away_team?: Team | null;
@@ -20,52 +20,113 @@ interface Match {
     goal_away?: number | null;
 }
 
-const props = defineProps<{
-    matches: Match[];
-}>();
+const props = defineProps<{ matches: Match[] }>();
 
-/* -------------------------
-   🟦 Filtros
---------------------------*/
-const searchSeason = ref('');
+// ---------- MODAL ELIMINAR ----------
+const showDeleteModal = ref(false);
+const matchToDelete = ref<number | null>(null);
+
+function openDeleteModal(id: number) {
+    matchToDelete.value = id;
+    showDeleteModal.value = true;
+}
+
+function confirmDelete() {
+    if (matchToDelete.value !== null) {
+        router.delete(route('admin.matches.destroy', matchToDelete.value));
+    }
+    showDeleteModal.value = false;
+}
+
+function cancelDelete() {
+    showDeleteModal.value = false;
+}
+
+// ---------- Filtros ----------
+const searchSeason = ref<number | null>(null);
 const searchTeam = ref('');
-const searchDate = ref('');
+const searchDate = ref<string>('');
 
-/* -------------------------
-   🔍 Búsqueda y filtrado
---------------------------*/
+const appliedSeason = ref<number | null>(null);
+const appliedTeam = ref('');
+const appliedDate = ref('');
+
+function applySearch() {
+    appliedSeason.value = searchSeason.value;
+    appliedTeam.value = searchTeam.value.trim().toLowerCase();
+    appliedDate.value = searchDate.value.trim(); // YYYY-MM-DD
+    currentPage.value = 1;
+}
+
+function clearFilters() {
+    searchSeason.value = null;
+    searchTeam.value = '';
+    searchDate.value = '';
+    appliedSeason.value = null;
+    appliedTeam.value = '';
+    appliedDate.value = '';
+    currentPage.value = 1;
+}
+
+// ---------- Filtrado ----------
 const filtered = computed(() => {
     return props.matches.filter((m) => {
-        const text =
-            `${m.season} ${m.home_team?.name} ${m.away_team?.name} ${m.match_date_time}`.toLowerCase();
+        let ok = true;
 
-        return (
-            text.includes(searchSeason.value.toLowerCase()) &&
-            text.includes(searchTeam.value.toLowerCase()) &&
-            text.includes(searchDate.value.toLowerCase())
-        );
+        if (appliedSeason.value !== null)
+            ok = ok && Number(m.season) === Number(appliedSeason.value);
+
+        if (appliedTeam.value) {
+            const both =
+                `${m.home_team?.name ?? ''} ${m.away_team?.name ?? ''}`.toLowerCase();
+            ok = ok && both.includes(appliedTeam.value);
+        }
+
+        if (appliedDate.value) {
+            const matchDate = new Date(m.match_date_time);
+            const y = matchDate.getFullYear();
+            const mth = String(matchDate.getMonth() + 1).padStart(2, '0');
+            const d = String(matchDate.getDate()).padStart(2, '0');
+            const matchFormatted = `${y}-${mth}-${d}`;
+            ok = ok && matchFormatted === appliedDate.value;
+        }
+
+        return ok;
     });
 });
 
-/* -------------------------
-   📄 Paginación
---------------------------*/
-const itemsPerPage = 10;
+// ---------- Utilidades ----------
+function formatDate(datetime: string) {
+    const d = new Date(datetime);
+
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+
+    return `${y}-${m}-${day} ${hh}:${mm}`;
+}
+
+function getMatchStatus(dateStr: string) {
+    const now = new Date();
+    const match = new Date(dateStr);
+    const endMatch = new Date(match.getTime() + 2 * 60 * 60 * 1000);
+
+    if (now < match) return 'Partido en espera';
+    if (now >= match && now <= endMatch) return 'Partido en curso';
+    return 'Partido terminado';
+}
+
+// ---------- Paginación ----------
+const itemsPerPage = 5;
 const currentPage = ref(1);
 
 const paginated = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
     return filtered.value.slice(start, start + itemsPerPage);
 });
-
-/* -------------------------
-   ❌ Eliminar partido
---------------------------*/
-function destroyMatch(id: number) {
-    if (confirm('¿Seguro que deseas eliminar este partido?')) {
-        router.delete(route('admin.matches.destroy', id));
-    }
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Partidos', href: route('admin.matches.index') },
@@ -76,101 +137,111 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head title="Partidos" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
+        <!-- MODAL GLOBAL -->
+        <ConfirmDeleteModal
+            :show="showDeleteModal"
+            title="Eliminar Partido"
+            message="¿Estás seguro de que deseas eliminar este partido? Esta acción no se puede deshacer."
+            @confirm="confirmDelete"
+            @cancel="cancelDelete"
+        />
+
         <div class="space-y-8 p-6">
-            <!-- 🧭 Encabezado -->
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-800">
                     Partidos de la liga
                 </h1>
 
                 <Link :href="route('admin.matches.create')">
-                    <Button class="px-4 py-2  bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-circle-plus"></i>Crear</Button>
+                    <Button class="bg-[#D62027] px-4 py-2 text-white">
+                        <i class="fa-solid fa-circle-plus"></i> Crear
+                    </Button>
                 </Link>
             </div>
 
-            <!-- 🔍 Card de Filtros -->
-            <div
-                class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
-            >
-                <h2 class="mb-4 text-lg font-semibold text-gray-800">
-                    Filtros de Búsqueda
-                </h2>
+            <!-- Filtros -->
+            <div class="rounded-xl border bg-white p-6 shadow-md">
+                <h2 class="mb-4 text-lg font-semibold">Filtros de Búsqueda</h2>
 
-                <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div class="grid gap-6 md:grid-cols-3">
                     <div>
-                        <label class="text-sm font-medium text-gray-600"
-                            >Temporada</label
-                        >
+                        <label class="text-sm">Temporada</label>
                         <input
-                            v-model="searchSeason"
-                            type="text"
-                            placeholder="Buscar por temporada"
-                            class="mt-1 w-full rounded-lg border-gray-300 p-2"
+                            v-model.number="searchSeason"
+                            type="number"
+                            placeholder="Ej: 2025"
+                            class="mt-1 w-full rounded-lg border p-2"
                         />
                     </div>
 
                     <div>
-                        <label class="text-sm font-medium text-gray-600"
-                            >Equipo</label
-                        >
+                        <label class="text-sm">Equipo</label>
                         <input
                             v-model="searchTeam"
                             type="text"
                             placeholder="Buscar por equipo"
-                            class="mt-1 w-full rounded-lg border-gray-300 p-2"
+                            class="mt-1 w-full rounded-lg border p-2"
                         />
                     </div>
 
                     <div>
-                        <label class="text-sm font-medium text-gray-600"
-                            >Fecha</label
-                        >
+                        <label class="text-sm">Fecha</label>
                         <input
                             v-model="searchDate"
-                            type="text"
-                            placeholder="Buscar por fecha"
-                            class="mt-1 w-full rounded-lg border-gray-300 p-2"
+                            type="date"
+                            class="mt-1 w-full rounded-lg border p-2"
                         />
                     </div>
                 </div>
 
-                <!-- Botones -->
                 <div class="mt-6 flex gap-3">
                     <Button
-                        class="px-4 py-2 text-[#D62027] border-[#D62027]"
                         variant="outline"
-                        @click="
-                            searchSeason = '';
-                            searchTeam = '';
-                            searchDate = '';
-                        "
-                        >Limpiar</Button
+                        class="border-[#D62027] px-4 py-2 text-[#D62027]"
+                        @click="clearFilters"
                     >
+                        Limpiar
+                    </Button>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" ><i class="fa-solid fa-magnifying-glass"></i>Buscar</Button>
+                    <Button
+                        class="bg-[#D62027] px-4 py-2 text-white"
+                        @click="applySearch"
+                    >
+                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                    </Button>
                 </div>
             </div>
 
-            <!-- 📋 Card Listado -->
-            <div
-                class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
-            >
+            <!-- Tabla -->
+            <div class="rounded-xl border bg-white p-6 shadow-md">
                 <div class="mb-4 flex items-center justify-between">
-                    <h2 class="text-lg font-semibold text-gray-800">
-                        Listado de partidos
-                    </h2>
+                    <h2 class="text-lg font-semibold">Listado de partidos</h2>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-download"></i>Descargar Excel</Button>
+                    <!-- ✔ BOTÓN EXPORTAR EXCEL -->
+                    <a
+                        :href="route('admin.export.excel', {
+                            module: 'matches',
+                            season: appliedSeason || undefined,
+                            team: appliedTeam || undefined,
+                            date: appliedDate || undefined
+                        })"
+                        target="_blank"
+                    >
+                        <Button class="bg-[#D62027] px-4 py-2 text-white">
+                            <i class="fa-solid fa-download"></i> Exportar Excel
+                        </Button>
+                    </a>
                 </div>
 
-                <div class="overflow-x-auto rounded-lg border border-gray-200">
-                    <table class="w-full border-collapse">
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full">
                         <thead>
-                            <tr class="bg-gray-100 text-sm text-gray-700">
+                            <tr class="bg-gray-100 text-sm">
                                 <th class="p-3">Fecha y Hora</th>
                                 <th class="p-3">Temporada</th>
                                 <th class="p-3">Equipos</th>
                                 <th class="p-3">Marcador</th>
+                                <th class="p-3">Estado</th>
                                 <th class="p-3">Acciones</th>
                             </tr>
                         </thead>
@@ -182,14 +253,12 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 class="border-t hover:bg-gray-50"
                             >
                                 <td class="p-3 text-center">
-                                    {{
-                                        new Date(
-                                            match.match_date_time,
-                                        ).toLocaleString()
-                                    }}
+                                    {{ formatDate(match.match_date_time) }}
                                 </td>
 
-                                <td class="p-3 text-center">{{ match.season }}</td>
+                                <td class="p-3 text-center">
+                                    {{ match.season }}
+                                </td>
 
                                 <td class="p-3 text-center">
                                     {{ match.home_team?.name ?? '—' }}
@@ -198,27 +267,26 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 </td>
 
                                 <td class="p-3 text-center">
-                                    {{ match.goal_home ?? '-' }} -
-                                    {{ match.goal_away ?? '-' }}
+                                    {{ match.goal_home }} -
+                                    {{ match.goal_away }}
+                                </td>
+
+                                <td class="p-3 text-center font-semibold">
+                                    {{ getMatchStatus(match.match_date_time) }}
                                 </td>
 
                                 <td class="flex justify-center gap-2 p-3">
                                     <Link
-                                        :href="
-                                            route(
-                                                'admin.matches.edit',
-                                                match.id,
-                                            )
-                                        "
+                                        :href="route('admin.matches.edit', match.id)"
                                     >
-                                        <Button size="sm"
-                                            ><i class="fa-regular fa-pen-to-square"></i></Button
-                                        >
+                                        <Button size="sm">
+                                            <i class="fa-regular fa-pen-to-square"></i>
+                                        </Button>
                                     </Link>
 
                                     <Button
                                         size="sm"
-                                        @click="destroyMatch(match.id)"
+                                        @click="openDeleteModal(match.id)"
                                     >
                                         <i class="fa-solid fa-delete-left"></i>
                                     </Button>
@@ -227,7 +295,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
                             <tr v-if="filtered.length === 0">
                                 <td
-                                    colspan="5"
+                                    colspan="6"
                                     class="p-6 text-center text-gray-500"
                                 >
                                     No hay resultados.
@@ -237,10 +305,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </table>
                 </div>
 
-                <!-- Pagination -->
-                <div
-                    class="mt-4 flex items-center justify-between text-sm text-gray-600"
-                >
+                <!-- Paginación -->
+                <div class="mt-4 flex items-center justify-between text-sm">
                     <span>
                         Mostrando {{ paginated.length }} de
                         {{ filtered.length }}

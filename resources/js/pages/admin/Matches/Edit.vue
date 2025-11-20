@@ -47,6 +47,14 @@ const breadcrumbs = [
                     Modifique los datos del partido seleccionado.
                 </p>
 
+                <!-- 🔴 Error global por conflicto de horarios -->
+                <div
+                    v-if="form.errors.match_date_time"
+                    class="mb-4 rounded-lg border border-red-300 bg-red-100 px-4 py-3 text-red-700"
+                >
+                    {{ form.errors.match_date_time }}
+                </div>
+
                 <form @submit.prevent="submit" class="space-y-5">
                     <!-- FECHA Y HORA -->
                     <div class="flex flex-col gap-1">
@@ -57,6 +65,12 @@ const breadcrumbs = [
                             class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
                             required
                         />
+                        <p
+                            v-if="form.errors.match_date_time"
+                            class="text-sm text-red-600"
+                        >
+                            {{ form.errors.match_date_time }}
+                        </p>
                     </div>
 
                     <!-- TEMPORADA -->
@@ -68,6 +82,12 @@ const breadcrumbs = [
                             class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
                             required
                         />
+                        <p
+                            v-if="form.errors.season"
+                            class="text-sm text-red-600"
+                        >
+                            {{ form.errors.season }}
+                        </p>
                     </div>
 
                     <!-- EQUIPO LOCAL -->
@@ -86,6 +106,13 @@ const breadcrumbs = [
                                 {{ team.name }}
                             </option>
                         </select>
+
+                        <p
+                            v-if="form.errors.id_home_team"
+                            class="text-sm text-red-600"
+                        >
+                            {{ form.errors.id_home_team }}
+                        </p>
                     </div>
 
                     <!-- EQUIPO VISITANTE -->
@@ -104,6 +131,13 @@ const breadcrumbs = [
                                 {{ team.name }}
                             </option>
                         </select>
+
+                        <p
+                            v-if="form.errors.id_away_team"
+                            class="text-sm text-red-600"
+                        >
+                            {{ form.errors.id_away_team }}
+                        </p>
                     </div>
 
                     <!-- BOTONES -->
@@ -111,7 +145,7 @@ const breadcrumbs = [
                         <Link :href="route('admin.matches.index')">
                             <Button
                                 variant="outline"
-                                class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                                class="border-[#D62027] px-4 py-2 text-[#D62027]"
                             >
                                 Cancelar
                             </Button>
@@ -119,7 +153,7 @@ const breadcrumbs = [
 
                         <Button
                             :disabled="form.processing"
-                            class="px-4 py-2 bg-[#D62027] text-white"
+                            class="bg-[#D62027] px-4 py-2 text-white"
                         >
                             Actualizar
                         </Button>

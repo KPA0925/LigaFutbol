@@ -3,10 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { route } from 'ziggy-js';
-import { type BreadcrumbItem } from '@/types';
 
 const props = defineProps<{ players: any[]; matches: any[] }>();
 
@@ -18,16 +18,19 @@ const form = useForm({
     description: '',
 });
 
+// 📌 Obtener datos del partido seleccionado
 const selectedMatchData = computed(() =>
     props.matches.find((m) => m.id === Number(form.id_match)),
 );
 
+// 📌 Equipos del partido seleccionado
 const availableTeams = computed(() => {
     if (!selectedMatchData.value) return [];
     const { home_team, away_team } = selectedMatchData.value;
     return [home_team, away_team].filter(Boolean);
 });
 
+// 📌 Jugadores del equipo seleccionado
 const availablePlayers = computed(() =>
     props.players.filter((p) => p.id_team === Number(form.id_team)),
 );
@@ -62,6 +65,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <!-- Partido -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Partido</Label>
+
                         <select
                             v-model="form.id_match"
                             class="h-11 rounded-lg border border-gray-300 bg-white px-3 text-gray-700 focus:border-blue-500"
@@ -78,17 +82,27 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 {{ m.away_team?.name }}
                             </option>
                         </select>
+
+                        <!-- ❗ MENSAJE DE ERROR DEL PARTIDO -->
+                        <p
+                            v-if="form.errors.id_match"
+                            class="mt-1 text-sm text-red-600"
+                        >
+                            {{ form.errors.id_match }}
+                        </p>
                     </div>
 
                     <!-- Equipo -->
                     <div class="flex flex-col gap-1" v-if="form.id_match">
                         <Label class="text-gray-700">Equipo</Label>
+
                         <select
                             v-model="form.id_team"
                             class="h-11 rounded-lg border border-gray-300 bg-white px-3 text-gray-700 focus:border-blue-500"
                             required
                         >
                             <option value="">Seleccione un equipo</option>
+
                             <option
                                 v-for="t in availableTeams"
                                 :key="t?.id"
@@ -108,6 +122,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                             required
                         >
                             <option value="">Seleccione un jugador</option>
+
                             <option
                                 v-for="p in availablePlayers"
                                 :key="p.id"
@@ -146,7 +161,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <Link :href="route('admin.goals.index')">
                             <Button
                                 variant="outline"
-                                class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                                class="border-[#D62027] px-4 py-2 text-[#D62027]"
                             >
                                 Cancelar
                             </Button>
@@ -154,7 +169,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
                         <Button
                             type="submit"
-                            class="px-4 py-2 bg-[#D62027] text-white"
+                            class="bg-[#D62027] px-4 py-2 text-white"
                             :disabled="form.processing"
                         >
                             Guardar

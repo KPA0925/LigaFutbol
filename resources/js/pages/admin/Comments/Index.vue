@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
-import { type BreadcrumbItem } from '@/types';
 
 interface Comment {
     id: number;
@@ -18,24 +19,49 @@ const props = defineProps<{
 }>();
 
 /* -------------------------
-   🟦 Filtros
+   🟦 Filtros (solo usuario y descripción)
 --------------------------*/
 const searchUser = ref('');
 const searchDescription = ref('');
-const searchDate = ref('');
+
+/* Aplicados solo al hacer buscar */
+const appliedFilters = ref({
+    user: '',
+    desc: '',
+});
 
 /* -------------------------
-   🔍 Filtrado
+   🕒 Formateo fecha para tabla
+--------------------------*/
+function formatDate(dateStr: string) {
+    const date = new Date(dateStr);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+/* -------------------------
+   🔍 Filtrado real (SIN FECHA)
 --------------------------*/
 const filtered = computed(() => {
     return props.comments.filter((c) => {
-        const textFull =
-            `${c.user?.name ?? ''} ${c.description} ${c.created_at}`.toLowerCase();
-
         return (
-            textFull.includes(searchUser.value.toLowerCase()) &&
-            textFull.includes(searchDescription.value.toLowerCase()) &&
-            textFull.includes(searchDate.value.toLowerCase())
+            // Usuario
+            (appliedFilters.value.user === '' ||
+                (c.user?.name ?? '')
+                    .toLowerCase()
+                    .includes(appliedFilters.value.user.toLowerCase())) &&
+            // Descripción
+            (appliedFilters.value.desc === '' ||
+                c.description
+                    .toLowerCase()
+                    .includes(appliedFilters.value.desc.toLowerCase()))
         );
     });
 });
@@ -43,7 +69,7 @@ const filtered = computed(() => {
 /* -------------------------
    📄 Paginación
 --------------------------*/
-const itemsPerPage = 10;
+const itemsPerPage = 5;
 const currentPage = ref(1);
 
 const paginated = computed(() => {
@@ -52,27 +78,52 @@ const paginated = computed(() => {
 });
 
 /* -------------------------
-   🕒 Formatear fecha
+   🔎 Aplicar filtros
 --------------------------*/
-function formatDate(dateStr: string) {
-    const date = new Date(dateStr);
-    return date.toLocaleString('es-CO', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-    });
+function applyFilters() {
+    appliedFilters.value = {
+        user: searchUser.value,
+        desc: searchDescription.value,
+    };
+
+    currentPage.value = 1;
 }
 
 /* -------------------------
-   ❌ Eliminar
+   ♻ Limpiar filtros
 --------------------------*/
-function destroyComment(id: number) {
-    if (confirm('¿Seguro que deseas eliminar este comentario?')) {
-        router.delete(route('admin.comments.destroy', id));
+function clearFilters() {
+    searchUser.value = '';
+    searchDescription.value = '';
+
+    appliedFilters.value = {
+        user: '',
+        desc: '',
+    };
+
+    currentPage.value = 1;
+}
+
+/* -------------------------
+   ❌ Modal eliminar
+--------------------------*/
+const showDeleteModal = ref(false);
+const deletingId = ref<number | null>(null);
+
+function openDelete(id: number) {
+    deletingId.value = id;
+    showDeleteModal.value = true;
+}
+
+function confirmDelete() {
+    if (deletingId.value) {
+        router.delete(route('admin.comments.destroy', deletingId.value));
     }
+    showDeleteModal.value = false;
+}
+
+function cancelDelete() {
+    showDeleteModal.value = false;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -90,7 +141,9 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <h1 class="text-3xl font-bold text-gray-800">Comentarios</h1>
 
                 <Link :href="route('admin.comments.create')">
-                    <Button class="px-4 py-2  bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-circle-plus"></i>Crear</Button>
+                    <Button class="bg-[#D62027] px-4 py-2 text-white">
+                        <i class="fa-solid fa-circle-plus"></i> Crear
+                    </Button>
                 </Link>
             </div>
 
@@ -102,7 +155,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                     Filtros de Búsqueda
                 </h2>
 
-                <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <!-- Usuario -->
                     <div>
                         <label class="text-sm font-medium text-gray-600"
                             >Usuario</label
@@ -115,6 +169,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         />
                     </div>
 
+                    <!-- Descripción -->
                     <div>
                         <label class="text-sm font-medium text-gray-600"
                             >Descripción</label
@@ -126,39 +181,28 @@ const breadcrumbs: BreadcrumbItem[] = [
                             class="mt-1 w-full rounded-lg border-gray-300 p-2"
                         />
                     </div>
-
-                    <div>
-                        <label class="text-sm font-medium text-gray-600"
-                            >Fecha</label
-                        >
-                        <input
-                            v-model="searchDate"
-                            type="text"
-                            placeholder="Buscar por fecha"
-                            class="mt-1 w-full rounded-lg border-gray-300 p-2"
-                        />
-                    </div>
                 </div>
 
                 <!-- Botones -->
                 <div class="mt-6 flex gap-3">
                     <Button
-                        class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                        class="border-[#D62027] px-4 py-2 text-[#D62027]"
                         variant="outline"
-                        @click="
-                            searchUser = '';
-                            searchDescription = '';
-                            searchDate = '';
-                        "
+                        @click="clearFilters"
                     >
                         Limpiar
                     </Button>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" ><i class="fa-solid fa-magnifying-glass"></i>Buscar</Button>
+                    <Button
+                        class="bg-[#D62027] px-4 py-2 text-white"
+                        @click="applyFilters"
+                    >
+                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                    </Button>
                 </div>
             </div>
 
-            <!-- 📋 Card Listado -->
+            <!-- 📋 Listado -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
@@ -167,7 +211,20 @@ const breadcrumbs: BreadcrumbItem[] = [
                         Listado de comentarios
                     </h2>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-download"></i>Descargar Excel</Button>
+                    <a
+                        :href="
+                            route('admin.export.excel', {
+                                module: 'comments',
+                                user: appliedFilters.user || undefined,
+                                desc: appliedFilters.desc || undefined,
+                            })
+                        "
+                        target="_blank"
+                    >
+                        <Button class="bg-[#D62027] px-4 py-2 text-white">
+                            <i class="fa-solid fa-download"></i> Exportar Excel
+                        </Button>
+                    </a>
                 </div>
 
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
@@ -205,15 +262,14 @@ const breadcrumbs: BreadcrumbItem[] = [
                                             route('admin.comments.edit', c.id)
                                         "
                                     >
-                                        <Button size="sm"
-                                            ><i class="fa-regular fa-pen-to-square"></i></Button
-                                        >
+                                        <Button size="sm">
+                                            <i
+                                                class="fa-regular fa-pen-to-square"
+                                            ></i>
+                                        </Button>
                                     </Link>
 
-                                    <Button
-                                        size="sm"
-                                        @click="destroyComment(c.id)"
-                                    >
+                                    <Button size="sm" @click="openDelete(c.id)">
                                         <i class="fa-solid fa-delete-left"></i>
                                     </Button>
                                 </td>
@@ -264,5 +320,14 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
             </div>
         </div>
+
+        <!-- 🟥 MODAL -->
+        <ConfirmDeleteModal
+            :show="showDeleteModal"
+            title="Eliminar comentario"
+            message="¿Estás seguro de que deseas eliminar este comentario?"
+            @confirm="confirmDelete"
+            @cancel="cancelDelete"
+        />
     </AppLayout>
 </template>

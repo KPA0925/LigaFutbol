@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('teams_matches', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_match')->constrained('matches')->onDelete('cascade');
-            $table->foreignId('id_home_team')->constrained('teams')->onDelete('cascade');
-            $table->foreignId('id_away_team')->constrained('teams')->onDelete('cascade');
+            $table->foreignId('id_match')->constrained('matches')->cascadeOnDelete();
+            $table->foreignId('id_home_team')->constrained('teams')->cascadeOnDelete();
+            $table->foreignId('id_away_team')->constrained('teams')->cascadeOnDelete();
             $table->timestamps();
         });
     }

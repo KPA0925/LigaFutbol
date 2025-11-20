@@ -47,15 +47,23 @@ class GoalController extends Controller
             'id_match' => 'required|exists:matches,id',
         ]);
 
+        $match = FootballMatch::findOrFail($request->id_match);
+
+        if (now()->lt($match->match_date_time)) {
+            return back()
+                ->withErrors(['id_match' => 'No puedes registrar goles en un partido que aún no ha comenzado.'])
+                ->withInput();
+        }
+
         Goal::create($validated);
 
         return redirect()->route('admin.goals.index')
             ->with('success', 'Gol registrado correctamente.');
     }
 
+
     public function edit(Goal $goal)
     {
-        // Cargar match con sus equipos
         $goal->load(['player.team', 'match.homeTeam', 'match.awayTeam']);
 
         $players = Player::with('team')
@@ -80,6 +88,14 @@ class GoalController extends Controller
             'id_player' => 'required|exists:players,id',
             'id_match' => 'required|exists:matches,id',
         ]);
+
+        $match = FootballMatch::findOrFail($request->id_match);
+
+        if ($match->match_date_time > now()) {
+            return back()->withErrors([
+                'id_match' => 'Solo puedes registrar goles en partidos que ya hayan comenzado.',
+            ]);
+        }
 
         $goal->update($validated);
 

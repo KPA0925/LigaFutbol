@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\FootballMatch;
+use App\Models\FootballMatchTeam;
+use App\Models\Goal;
 
 class TeamController extends Controller
 {
@@ -62,8 +65,22 @@ class TeamController extends Controller
 
     public function destroy(Team $team)
     {
+        $matchIds = FootballMatchTeam::where('id_home_team', $team->id)
+            ->orWhere('id_away_team', $team->id)
+            ->pluck('id_match');
+
+        if ($matchIds->isNotEmpty()) {
+
+            Goal::whereIn('id_match', $matchIds)->delete();
+
+            FootballMatchTeam::whereIn('id_match', $matchIds)->delete();
+
+            FootballMatch::whereIn('id', $matchIds)->delete();
+        }
+
         $team->delete();
 
-        return redirect()->route('admin.teams.index')->with('success', 'Equipo eliminado correctamente.');
+        return redirect()->route('admin.teams.index')
+            ->with('success', 'Equipo y todos sus partidos asociados fueron eliminados correctamente.');
     }
 }

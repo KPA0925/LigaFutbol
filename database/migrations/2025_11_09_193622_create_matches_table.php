@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('matches', function (Blueprint $table) {
             $table->id();
-            $table->date('match_date_time');
+            $table->dateTime('match_date_time');
             $table->integer('goal_home');
             $table->integer('goal_away');
             $table->string('season');

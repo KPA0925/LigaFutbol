@@ -9,7 +9,8 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\GoalController;
 use App\Http\Controllers\Admin\FootballMatchController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\ExportController;
+
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\UserTeamController;
 use App\Http\Controllers\User\UserPlayerController;
@@ -33,11 +34,6 @@ Route::middleware(['auth', 'verified', 'role:user'])->prefix('user')->group(func
     Route::get('/goles', [UserGoalController::class, 'index'])->name('goals.index');
     Route::get('/comentarios', [UserCommentController::class, 'index'])->name('comments.index');
     Route::post('/comentarios', [UserCommentController::class, 'store'])->name('comments.store');
-    
-    Route::get('/reports/teams', [UserReportController::class, 'teams'])->name('reports.teams');
-    Route::get('/reports/players', [UserReportController::class, 'players'])->name('reports.players');
-    Route::get('/reports/matches', [UserReportController::class, 'matches'])->name('reports.matches');
-    Route::get('/reports/goals', [UserReportController::class, 'goals'])->name('reports.goals');
 });
 
 Route::middleware(['auth', 'role:admin'])
@@ -53,9 +49,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('matches', FootballMatchController::class)->names('matches');
         Route::resource('comments', CommentController::class)->names('comments');
 
-        Route::get('reports/players', [ReportController::class, 'players'])->name('reports.players');
-        Route::get('reports/matches', [ReportController::class, 'matches'])->name('reports.matches');
-        Route::get('reports/goals', [ReportController::class, 'goals'])->name('reports.goals');
+        Route::get('/export', [ExportController::class, 'export'])->name('export.excel');
     });
 
 require __DIR__ . '/settings.php';

@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
-import { type BreadcrumbItem } from '@/types';
 
 /* ---------------------------------
    🔹 Tipos
@@ -33,10 +34,22 @@ const filters = ref({
     player: '',
 });
 
+// 👇 Filtros aplicados al hacer clic en "Buscar"
+const appliedFilters = ref({
+    season: '',
+    team: '',
+    player: '',
+});
+
+function applyFilters() {
+    appliedFilters.value = { ...filters.value };
+    currentPage.value = 1;
+}
+
 /* ---------------------------------
    🔹 Paginación
 ----------------------------------- */
-const itemsPerPage = 10;
+const itemsPerPage = 5;
 const currentPage = ref(1);
 
 /* ---------------------------------
@@ -47,13 +60,13 @@ const filtered = computed(() => {
         return (
             g.match.season
                 .toLowerCase()
-                .includes(filters.value.season.toLowerCase()) &&
+                .includes(appliedFilters.value.season.toLowerCase()) &&
             (g.player.team?.name ?? '')
                 .toLowerCase()
-                .includes(filters.value.team.toLowerCase()) &&
+                .includes(appliedFilters.value.team.toLowerCase()) &&
             g.player.fullname
                 .toLowerCase()
-                .includes(filters.value.player.toLowerCase())
+                .includes(appliedFilters.value.player.toLowerCase())
         );
     });
 });
@@ -72,15 +85,26 @@ function resetFilters() {
         team: '',
         player: '',
     };
+    appliedFilters.value = { ...filters.value };
+    currentPage.value = 1;
 }
 
 /* ---------------------------------
-   🔹 Eliminar
+   ❌ Modal de eliminación
 ----------------------------------- */
-function destroyGoal(id: number) {
-    if (confirm('¿Seguro que deseas eliminar este gol?')) {
-        router.delete(route('admin.goals.destroy', id));
+const showDeleteModal = ref(false);
+const goalToDelete = ref<number | null>(null);
+
+function openDeleteModal(id: number) {
+    goalToDelete.value = id;
+    showDeleteModal.value = true;
+}
+
+function confirmDelete() {
+    if (goalToDelete.value) {
+        router.delete(route('admin.goals.destroy', goalToDelete.value));
     }
+    showDeleteModal.value = false;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -100,14 +124,14 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </h1>
 
                 <Link :href="route('admin.goals.create')">
-                    <Button class="px-4 py-2  bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-circle-plus"></i>Crear</Button>
+                    <Button class="bg-[#D62027] px-4 py-2 text-white">
+                        <i class="fa-solid fa-circle-plus"></i> Crear
+                    </Button>
                 </Link>
             </div>
 
-            <!-- 🔍 CARD FILTROS -->
-            <div
-                class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
-            >
+            <!-- 🔍 FILTROS -->
+            <div class="rounded-xl border bg-white p-6 shadow-md">
                 <h2 class="mb-4 text-lg font-semibold text-gray-800">
                     Filtros de Búsqueda
                 </h2>
@@ -152,26 +176,48 @@ const breadcrumbs: BreadcrumbItem[] = [
 
                 <!-- Botones -->
                 <div class="mt-6 flex gap-3">
-                    <Button class="px-4 py-2 text-[#D62027] border-[#D62027]" variant="outline" @click="resetFilters"
-                        >Limpiar</Button
+                    <Button
+                        class="border-[#D62027] px-4 py-2 text-[#D62027]"
+                        variant="outline"
+                        @click="resetFilters"
                     >
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" ><i class="fa-solid fa-magnifying-glass"></i>Buscar</Button>
+                        Limpiar
+                    </Button>
+
+                    <Button
+                        class="bg-[#D62027] px-4 py-2 text-white"
+                        @click="applyFilters"
+                    >
+                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                    </Button>
                 </div>
             </div>
 
-            <!-- 📋 CARD LISTADO -->
-            <div
-                class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
-            >
+            <!-- 📋 LISTADO -->
+            <div class="rounded-xl border bg-white p-6 shadow-md">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-gray-800">
                         Listado de goles
                     </h2>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-download"></i>Descargar Excel</Button>
+                    <a
+                        :href="
+                            route('admin.export.excel', {
+                                module: 'goals',
+                                season: appliedFilters.season || undefined,
+                                team: appliedFilters.team || undefined,
+                                player: appliedFilters.player || undefined,
+                            })
+                        "
+                        target="_blank"
+                    >
+                        <Button class="bg-[#D62027] px-4 py-2 text-white">
+                            <i class="fa-solid fa-download"></i> Exportar Excel
+                        </Button>
+                    </a>
                 </div>
 
-                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <div class="overflow-x-auto rounded-lg border">
                     <table class="w-full border-collapse">
                         <thead>
                             <tr class="bg-gray-100 text-sm text-gray-700">
@@ -193,9 +239,10 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 <td class="p-3 text-center">
                                     {{ goal.match.season }} —
                                     {{
-                                        new Date(
-                                            goal.match.match_date_time,
-                                        ).toLocaleString()
+                                        new Date(goal.match.match_date_time)
+                                            .toISOString()
+                                            .slice(0, 16)
+                                            .replace('T', ' ')
                                     }}
                                 </td>
 
@@ -211,7 +258,9 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     {{ goal.minute }}’
                                 </td>
 
-                                <td class="p-3 italic text-center text-gray-700">
+                                <td
+                                    class="p-3 text-center italic text-gray-700"
+                                >
                                     {{ goal.description || '—' }}
                                 </td>
 
@@ -221,14 +270,16 @@ const breadcrumbs: BreadcrumbItem[] = [
                                             route('admin.goals.edit', goal.id)
                                         "
                                     >
-                                        <Button size="sm"
-                                            ><i class="fa-regular fa-pen-to-square"></i></Button
-                                        >
+                                        <Button size="sm">
+                                            <i
+                                                class="fa-regular fa-pen-to-square"
+                                            ></i>
+                                        </Button>
                                     </Link>
 
                                     <Button
                                         size="sm"
-                                        @click="destroyGoal(goal.id)"
+                                        @click="openDeleteModal(goal.id)"
                                     >
                                         <i class="fa-solid fa-delete-left"></i>
                                     </Button>
@@ -280,5 +331,14 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
             </div>
         </div>
+
+        <!-- 🔥 MODAL -->
+        <ConfirmDeleteModal
+            :show="showDeleteModal"
+            title="Eliminar gol"
+            message="¿Seguro que deseas eliminar este gol?"
+            @confirm="confirmDelete"
+            @cancel="showDeleteModal = false"
+        />
     </AppLayout>
 </template>

@@ -15,26 +15,23 @@ class FootballMatch extends Model
         'season',
     ];
 
-    // Relación directa con la tabla pivote
-    public function pivot()
+    public function teamData()
     {
         return $this->hasOne(FootballMatchTeam::class, 'id_match');
     }
 
-    // Equipo local
     public function homeTeam()
     {
         return $this->hasOneThrough(
             Team::class,
             FootballMatchTeam::class,
-            'id_match',        // FK en teams_matches hacia matches
-            'id',              // FK en teams hacia teams_matches
-            'id',              // PK en matches
-            'id_home_team'     // Clave en teams_matches hacia teams (home)
+            'id_match',
+            'id',
+            'id',
+            'id_home_team'
         );
     }
 
-    // Equipo visitante
     public function awayTeam()
     {
         return $this->hasOneThrough(
@@ -45,5 +42,24 @@ class FootballMatch extends Model
             'id',
             'id_away_team'
         );
+    }
+
+    public function goals()
+    {
+        return $this->hasMany(Goal::class, 'id_match');
+    }
+
+    public function homeGoals()
+    {
+        return $this->goals()->whereHas('player', function ($q) {
+            $q->where('id_team', optional($this->teamData)->id_home_team);
+        });
+    }
+
+    public function awayGoals()
+    {
+        return $this->goals()->whereHas('player', function ($q) {
+            $q->where('id_team', optional($this->teamData)->id_away_team);
+        });
     }
 }

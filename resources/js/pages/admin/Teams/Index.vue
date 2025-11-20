@@ -1,17 +1,22 @@
 <script setup lang="ts">
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
 
+/* -------------------------
+   📌 Props
+--------------------------*/
 interface Team {
     id: number;
     name: string;
-    city: string;
-    stadium: string;
+    city: string | null;
+    stadium: string | null;
     capacity: number;
     players_count: number;
+    founded_date: string | null; // YYYY-MM-DD
 }
 
 const props = defineProps<{
@@ -24,48 +29,104 @@ const props = defineProps<{
 const filterName = ref('');
 const filterCity = ref('');
 const filterStadium = ref('');
-const filterPlayers = ref('');
 
 /* -------------------------
-  🔎 Filtro principal
+   Estado interno
 --------------------------*/
-const filtered = computed(() => {
-    return props.teams.filter((t) => {
-        return (
-            t.name.toLowerCase().includes(filterName.value.toLowerCase()) &&
-            t.city.toLowerCase().includes(filterCity.value.toLowerCase()) &&
-            t.stadium
-                .toLowerCase()
-                .includes(filterStadium.value.toLowerCase()) &&
-            (filterPlayers.value === '' ||
-                String(t.players_count).includes(filterPlayers.value))
+const results = ref<Team[]>([...props.teams]);
+
+const itemsPerPage = 5;
+const currentPage = ref(1);
+
+/* -------------------------
+   Normalizar textos
+--------------------------*/
+function normalize(str: string | null | undefined) {
+    return String(str ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+}
+
+/* -------------------------
+   📆 Formatear fecha YYYY-MM-DD
+--------------------------*/
+function formatFounded(dateStr: string | null) {
+    if (!dateStr) return '—';
+    const d = new Date(dateStr);
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
+
+/* -------------------------
+   🔎 Buscar
+--------------------------*/
+function search() {
+    results.value = props.teams.filter((t) => {
+        const nameOK = normalize(t.name).includes(normalize(filterName.value));
+        const cityOK = normalize(t.city).includes(normalize(filterCity.value));
+        const stadiumOK = normalize(t.stadium).includes(
+            normalize(filterStadium.value),
         );
+
+        return nameOK && cityOK && stadiumOK;
     });
-});
+
+    currentPage.value = 1;
+}
+
+/* -------------------------
+   🧹 Limpiar filtros
+--------------------------*/
+function clearFilters() {
+    filterName.value = '';
+    filterCity.value = '';
+    filterStadium.value = '';
+
+    results.value = [...props.teams];
+    currentPage.value = 1;
+}
 
 /* -------------------------
    📄 Paginación
 --------------------------*/
-const itemsPerPage = 10;
-const currentPage = ref(1);
-
 const paginated = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
-    return filtered.value.slice(start, start + itemsPerPage);
+    return results.value.slice(start, start + itemsPerPage);
 });
 
 /* -------------------------
-   ❌ Eliminar
+   ❌ Eliminar (modal)
 --------------------------*/
-function destroyTeam(id: number) {
-    if (confirm('¿Seguro que deseas eliminar este equipo?')) {
-        router.delete(route('admin.teams.destroy', id));
-    }
+const showDeleteModal = ref(false);
+const teamToDelete = ref<number | null>(null);
+
+function openDeleteModal(id: number) {
+    teamToDelete.value = id;
+    showDeleteModal.value = true;
 }
 
-const breadcrumbs = [
-    { title: 'Equipos', href: route('admin.teams.index') },
-];
+function confirmDelete() {
+    if (teamToDelete.value) {
+        router.delete(route('admin.teams.destroy', teamToDelete.value));
+    }
+    showDeleteModal.value = false;
+}
+
+function cancelDelete() {
+    showDeleteModal.value = false;
+    teamToDelete.value = null;
+}
+
+/* -------------------------
+   🧭 Breadcrumbs
+--------------------------*/
+const breadcrumbs = [{ title: 'Equipos', href: route('admin.teams.index') }];
 </script>
 
 <template>
@@ -80,88 +141,80 @@ const breadcrumbs = [
                 </h1>
 
                 <Link :href="route('admin.teams.create')">
-                    <Button class="px-4 py-2  bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-circle-plus"></i>Crear</Button>
+                    <Button class="bg-[#D62027] px-4 py-2 text-white">
+                        <i class="fa-solid fa-circle-plus"></i> Crear
+                    </Button>
                 </Link>
             </div>
 
-            <!-- 🔍 Card de Filtros -->
+            <!-- 🔍 Filtros -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
                 <h2 class="mb-4 text-lg font-semibold text-gray-800">
-                    Filtros de búsqueda
+                    Filtros de Búsqueda
                 </h2>
 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-                    <div>
+                    <!-- Nombre -->
+                    <div class="flex flex-col">
                         <label class="text-sm font-medium text-gray-600"
                             >Nombre</label
                         >
                         <input
                             v-model="filterName"
                             type="text"
-                            placeholder="Buscar por nombre"
-                            class="mt-1 w-full rounded-lg border-gray-300 p-2"
+                            placeholder="Buscar nombre"
+                            class="mt-1 h-11 w-full rounded-lg border-gray-300 p-2"
                         />
                     </div>
 
-                    <div>
+                    <!-- Ciudad -->
+                    <div class="flex flex-col">
                         <label class="text-sm font-medium text-gray-600"
                             >Ciudad</label
                         >
                         <input
                             v-model="filterCity"
                             type="text"
-                            placeholder="Buscar por ciudad"
-                            class="mt-1 w-full rounded-lg border-gray-300 p-2"
+                            placeholder="Buscar ciudad"
+                            class="mt-1 h-11 w-full rounded-lg border-gray-300 p-2"
                         />
                     </div>
 
-                    <div>
+                    <!-- Estadio -->
+                    <div class="flex flex-col">
                         <label class="text-sm font-medium text-gray-600"
                             >Estadio</label
                         >
                         <input
                             v-model="filterStadium"
                             type="text"
-                            placeholder="Buscar por estadio"
-                            class="mt-1 w-full rounded-lg border-gray-300 p-2"
-                        />
-                    </div>
-
-                    <div>
-                        <label class="text-sm font-medium text-gray-600"
-                            >Jugadores</label
-                        >
-                        <input
-                            v-model="filterPlayers"
-                            type="number"
-                            placeholder="Buscar por jugadores"
-                            class="mt-1 w-full rounded-lg border-gray-300 p-2"
+                            placeholder="Buscar estadio"
+                            class="mt-1 h-11 w-full rounded-lg border-gray-300 p-2"
                         />
                     </div>
                 </div>
 
-                <!-- Botones -->
                 <div class="mt-6 flex gap-3">
                     <Button
-                    class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                        class="border-[#D62027] px-4 py-2 text-[#D62027]"
                         variant="outline"
-                        @click="
-                            filterName = '';
-                            filterCity = '';
-                            filterStadium = '';
-                            filterPlayers = '';
-                        "
+                        @click="clearFilters"
                     >
                         Limpiar
                     </Button>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" ><i class="fa-solid fa-magnifying-glass"></i>Buscar</Button>
+                    <Button
+                        class="bg-[#D62027] px-4 py-2 text-white"
+                        @click="search"
+                    >
+                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                    </Button>
                 </div>
             </div>
 
-            <!-- 📋 Card listado -->
+            <!-- 📋 Listado -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
@@ -170,7 +223,21 @@ const breadcrumbs = [
                         Listado de equipos
                     </h2>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-download"></i>Descargar Excel</Button>
+                    <a
+                        :href="
+                            route('admin.export.excel', {
+                                module: 'teams',
+                                name: filterName || undefined,
+                                city: filterCity || undefined,
+                                stadium: filterStadium || undefined,
+                            })
+                        "
+                        target="_blank"
+                    >
+                        <Button class="bg-[#D62027] px-4 py-2 text-white">
+                            <i class="fa-solid fa-download"></i> Descargar Excel
+                        </Button>
+                    </a>
                 </div>
 
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
@@ -181,6 +248,7 @@ const breadcrumbs = [
                                 <th class="p-3">Ciudad</th>
                                 <th class="p-3">Estadio</th>
                                 <th class="p-3">Capacidad</th>
+                                <th class="p-3">Fundado</th>
                                 <th class="p-3">Jugadores</th>
                                 <th class="p-3">Acciones</th>
                             </tr>
@@ -194,9 +262,21 @@ const breadcrumbs = [
                             >
                                 <td class="p-3 text-center">{{ team.name }}</td>
                                 <td class="p-3 text-center">{{ team.city }}</td>
-                                <td class="p-3 text-center">{{ team.stadium }}</td>
-                                <td class="p-3 text-center">{{ team.capacity }}</td>
-                                <td class="p-3 text-center">{{ team.players_count }}</td>
+                                <td class="p-3 text-center">
+                                    {{ team.stadium }}
+                                </td>
+                                <td class="p-3 text-center">
+                                    {{ team.capacity }}
+                                </td>
+
+                                <td class="p-3 text-center">
+                                    {{ formatFounded(team.founded_date) }}
+                                </td>
+
+                                <td class="p-3 text-center">
+                                    {{ team.players_count }}
+                                </td>
+
                                 <td class="flex justify-center gap-2 p-3">
                                     <Link
                                         :href="
@@ -204,22 +284,24 @@ const breadcrumbs = [
                                         "
                                     >
                                         <Button size="sm">
-                                            <i class="fa-regular fa-pen-to-square"></i>
+                                            <i
+                                                class="fa-regular fa-pen-to-square"
+                                            ></i>
                                         </Button>
                                     </Link>
 
                                     <Button
                                         size="sm"
-                                        @click="destroyTeam(team.id)"
+                                        @click="openDeleteModal(team.id)"
                                     >
                                         <i class="fa-solid fa-delete-left"></i>
                                     </Button>
                                 </td>
                             </tr>
 
-                            <tr v-if="filtered.length === 0">
+                            <tr v-if="results.length === 0">
                                 <td
-                                    colspan="6"
+                                    colspan="7"
                                     class="p-6 text-center text-gray-500"
                                 >
                                     No hay resultados.
@@ -229,13 +311,11 @@ const breadcrumbs = [
                     </table>
                 </div>
 
-                <!-- Pagination -->
                 <div
                     class="mt-4 flex items-center justify-between text-sm text-gray-600"
                 >
                     <span>
-                        Mostrando {{ paginated.length }} de
-                        {{ filtered.length }}
+                        Mostrando {{ paginated.length }} de {{ results.length }}
                     </span>
 
                     <div class="flex gap-2">
@@ -252,7 +332,7 @@ const breadcrumbs = [
                             size="sm"
                             variant="outline"
                             :disabled="
-                                currentPage * itemsPerPage >= filtered.length
+                                currentPage * itemsPerPage >= results.length
                             "
                             @click="currentPage++"
                         >
@@ -263,4 +343,13 @@ const breadcrumbs = [
             </div>
         </div>
     </AppLayout>
+
+    <!-- 🔥 Modal -->
+    <ConfirmDeleteModal
+        :show="showDeleteModal"
+        title="Eliminar equipo"
+        message="¿Estás seguro de que deseas eliminar este equipo? Esta acción no se puede deshacer."
+        @confirm="confirmDelete"
+        @cancel="cancelDelete"
+    />
 </template>

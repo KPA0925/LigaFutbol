@@ -31,13 +31,21 @@ class PresidentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'DNI' => 'required|string|max:50',
+            'dni' => 'required|string|max:50',
             'name' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'birth_date' => 'required|date',
             'elected_date' => 'required|date',
             'id_team' => 'required|exists:teams,id',
         ]);
+
+        $existingPresident = President::where('id_team', $request->id_team)->first();
+
+        if ($existingPresident) {
+            return back()->withErrors([
+                'id_team' => 'Este equipo ya tiene un presidente asignado.'
+            ])->withInput();
+        }
 
         President::create($validated);
 
@@ -60,13 +68,23 @@ class PresidentController extends Controller
     public function update(Request $request, President $president)
     {
         $validated = $request->validate([
-            'DNI' => 'required|string|max:50',
+            'dni' => 'required|string|max:50',
             'name' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'birth_date' => 'required|date',
             'elected_date' => 'required|date',
             'id_team' => 'required|exists:teams,id',
         ]);
+
+        if ($president->id_team != $request->id_team) {
+            $teamHasPresident = President::where('id_team', $request->id_team)->exists();
+
+            if ($teamHasPresident) {
+                return back()->withErrors([
+                    'id_team' => 'Este equipo ya tiene un presidente asignado.'
+                ])->withInput();
+            }
+        }
 
         $president->update($validated);
 

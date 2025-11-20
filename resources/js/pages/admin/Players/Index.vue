@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
 
-/* -------------------------------
-   🔹 Tipos
---------------------------------*/
+/* -------------------------
+   🧾 Tipos
+--------------------------*/
 interface Player {
     id: number;
     fullname: string;
@@ -16,45 +17,64 @@ interface Player {
     team?: { name: string } | null;
 }
 
-/* -------------------------------
-   🔹 Props
---------------------------------*/
+/* -------------------------
+   📦 Props
+--------------------------*/
 const props = defineProps<{
     players: Player[];
 }>();
 
-/* -------------------------------
-   🔹 Filtros de búsqueda
---------------------------------*/
+/* -------------------------
+   🔍 Filtros del formulario
+--------------------------*/
 const filterName = ref('');
 const filterBirth = ref('');
 const filterPosition = ref('');
 const filterTeam = ref('');
 
-/* -------------------------------
-   🔎 Filtrado
---------------------------------*/
+/* -------------------------
+   🎯 Filtros realmente aplicados
+--------------------------*/
+const activeFilters = ref({
+    name: '',
+    birth: '',
+    position: '',
+    team: '',
+});
+
+const filtersEnabled = ref(false);
+
+/* -------------------------
+   🔎 Filtrado REAL (solo usa activeFilters)
+--------------------------*/
 const filtered = computed(() => {
+    if (!filtersEnabled.value) return props.players;
+
     return props.players.filter((p) => {
-        return (
-            p.fullname.toLowerCase().includes(filterName.value.toLowerCase()) &&
-            p.birth_date
-                .toLowerCase()
-                .includes(filterBirth.value.toLowerCase()) &&
-            p.position
-                .toLowerCase()
-                .includes(filterPosition.value.toLowerCase()) &&
-            (p.team?.name ?? '')
-                .toLowerCase()
-                .includes(filterTeam.value.toLowerCase())
-        );
+        const matchesName = p.fullname
+            .toLowerCase()
+            .includes(activeFilters.value.name.toLowerCase());
+
+        const matchesBirth =
+            activeFilters.value.birth === '' ||
+            p.birth_date.startsWith(activeFilters.value.birth);
+
+        const matchesPosition = p.position
+            .toLowerCase()
+            .includes(activeFilters.value.position.toLowerCase());
+
+        const matchesTeam = (p.team?.name ?? '')
+            .toLowerCase()
+            .includes(activeFilters.value.team.toLowerCase());
+
+        return matchesName && matchesBirth && matchesPosition && matchesTeam;
     });
 });
 
-/* -------------------------------
-   🔹 Paginación
---------------------------------*/
-const itemsPerPage = 10;
+/* -------------------------
+   📄 Paginación
+--------------------------*/
+const itemsPerPage = 5;
 const currentPage = ref(1);
 
 const paginated = computed(() => {
@@ -62,15 +82,27 @@ const paginated = computed(() => {
     return filtered.value.slice(start, start + itemsPerPage);
 });
 
-/* -------------------------------
-   ❌ Eliminar jugador
---------------------------------*/
-function destroyPlayer(id: number) {
-    if (confirm('¿Seguro que deseas eliminar este jugador?')) {
-        router.delete(route('admin.players.destroy', id));
-    }
+/* -------------------------
+   ❌ Modal
+--------------------------*/
+const showDeleteModal = ref(false);
+const playerToDelete = ref<number | null>(null);
+
+function openDeleteModal(id: number) {
+    playerToDelete.value = id;
+    showDeleteModal.value = true;
 }
 
+function confirmDelete() {
+    if (playerToDelete.value) {
+        router.delete(route('admin.players.destroy', playerToDelete.value));
+    }
+    showDeleteModal.value = false;
+}
+
+/* -------------------------
+   🧭 Breadcrumbs
+--------------------------*/
 const breadcrumbs = [
     { title: 'Jugadores', href: route('admin.players.index') },
 ];
@@ -88,14 +120,14 @@ const breadcrumbs = [
                 </h1>
 
                 <Link :href="route('admin.players.create')">
-                    <Button class="px-4 py-2  bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-circle-plus"></i>Crear</Button>
+                    <Button class="bg-[#D62027] px-4 py-2 text-white">
+                        <i class="fa-solid fa-circle-plus"></i> Crear
+                    </Button>
                 </Link>
             </div>
 
-            <!-- 🔍 Card de Filtros -->
-            <div
-                class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
-            >
+            <!-- 🔍 Filtros -->
+            <div class="rounded-xl border bg-white p-6 shadow-md">
                 <h2 class="mb-4 text-lg font-semibold text-gray-800">
                     Filtros de Búsqueda
                 </h2>
@@ -119,8 +151,7 @@ const breadcrumbs = [
                         >
                         <input
                             v-model="filterBirth"
-                            type="text"
-                            placeholder="Buscar por fecha"
+                            type="date"
                             class="mt-1 w-full rounded-lg border-gray-300 p-2"
                         />
                     </div>
@@ -150,38 +181,72 @@ const breadcrumbs = [
                     </div>
                 </div>
 
-                <!-- Botones -->
                 <div class="mt-6 flex gap-3">
+                    <!-- LIMPIAR -->
                     <Button
-                    class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                        class="border-[#D62027] px-4 py-2 text-[#D62027]"
                         variant="outline"
                         @click="
                             filterName = '';
                             filterBirth = '';
                             filterPosition = '';
                             filterTeam = '';
+
+                            activeFilters.name = '';
+                            activeFilters.birth = '';
+                            activeFilters.position = '';
+                            activeFilters.team = '';
+
+                            filtersEnabled = false;
+                            currentPage = 1;
                         "
                     >
                         Limpiar
                     </Button>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" ><i class="fa-solid fa-magnifying-glass"></i>Buscar</Button>
+                    <!-- BUSCAR -->
+                    <Button
+                        class="bg-[#D62027] px-4 py-2 text-white"
+                        @click="
+                            activeFilters.name = filterName;
+                            activeFilters.birth = filterBirth;
+                            activeFilters.position = filterPosition;
+                            activeFilters.team = filterTeam;
+                            filtersEnabled = true;
+                            currentPage = 1;
+                        "
+                    >
+                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                    </Button>
                 </div>
             </div>
 
-            <!-- 📋 Card del listado -->
-            <div
-                class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
-            >
+            <!-- 📋 Listado -->
+            <div class="rounded-xl border bg-white p-6 shadow-md">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-gray-800">
                         Listado de jugadores
                     </h2>
 
-                    <Button class="px-4 py-2 bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-download"></i>Descargar Excel</Button>
+                    <a
+                        :href="
+                            route('admin.export.excel', {
+                                module: 'players',
+                                name: filterName || undefined,
+                                birth: filterBirth || undefined,
+                                position: filterPosition || undefined,
+                                team: filterTeam || undefined,
+                            })
+                        "
+                        target="_blank"
+                    >
+                        <Button class="bg-[#D62027] px-4 py-2 text-white">
+                            <i class="fa-solid fa-download"></i> Descargar Excel
+                        </Button>
+                    </a>
                 </div>
 
-                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <div class="overflow-x-auto rounded-lg border">
                     <table class="w-full border-collapse">
                         <thead>
                             <tr class="bg-gray-100 text-sm text-gray-700">
@@ -199,9 +264,15 @@ const breadcrumbs = [
                                 :key="player.id"
                                 class="border-t hover:bg-gray-50"
                             >
-                                <td class="p-3 text-center">{{ player.fullname }}</td>
-                                <td class="p-3 text-center">{{ player.birth_date }}</td>
-                                <td class="p-3 text-center">{{ player.position }}</td>
+                                <td class="p-3 text-center">
+                                    {{ player.fullname }}
+                                </td>
+                                <td class="p-3 text-center">
+                                    {{ player.birth_date }}
+                                </td>
+                                <td class="p-3 text-center">
+                                    {{ player.position }}
+                                </td>
                                 <td class="p-3 text-center">
                                     {{ player.team?.name ?? 'Sin equipo' }}
                                 </td>
@@ -215,14 +286,16 @@ const breadcrumbs = [
                                             )
                                         "
                                     >
-                                        <Button size="sm"
-                                            ><i class="fa-regular fa-pen-to-square"></i></Button
-                                        >
+                                        <Button size="sm">
+                                            <i
+                                                class="fa-regular fa-pen-to-square"
+                                            ></i>
+                                        </Button>
                                     </Link>
 
                                     <Button
                                         size="sm"
-                                        @click="destroyPlayer(player.id)"
+                                        @click="openDeleteModal(player.id)"
                                     >
                                         <i class="fa-solid fa-delete-left"></i>
                                     </Button>
@@ -274,5 +347,14 @@ const breadcrumbs = [
                 </div>
             </div>
         </div>
+
+        <!-- 🔥 MODAL -->
+        <ConfirmDeleteModal
+            :show="showDeleteModal"
+            title="Eliminar jugador"
+            message="¿Seguro que deseas eliminar este jugador?"
+            @confirm="confirmDelete"
+            @cancel="showDeleteModal = false"
+        />
     </AppLayout>
 </template>

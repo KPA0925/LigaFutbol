@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class President extends Model
 {
     protected $fillable = [
-        'DNI',
+        'dni',
         'name',
         'lastname',
         'birth_date',

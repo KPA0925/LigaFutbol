@@ -17,6 +17,8 @@
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
         "lorisleiva/laravel-actions": "^2.9",
+        "maatwebsite/excel": "^3.1",
+        "phpoffice/phpspreadsheet": "^1.30",
         "spatie/laravel-permission": "^6.23",
         "tightenco/ziggy": "^2.0"
     },

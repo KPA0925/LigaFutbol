@@ -9,7 +9,7 @@ import { route } from 'ziggy-js';
 const props = defineProps<{
     president: {
         id: number;
-        DNI: string;
+        dni: string;
         name: string;
         lastname: string;
         birth_date: string;
@@ -20,7 +20,7 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
-    DNI: props.president.DNI,
+    dni: props.president.dni,
     name: props.president.name,
     lastname: props.president.lastname,
     birth_date: props.president.birth_date,
@@ -59,7 +59,7 @@ const breadcrumbs = [
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">DNI</Label>
                         <Input
-                            v-model="form.DNI"
+                            v-model="form.dni"
                             class="h-11 rounded-lg border-gray-300"
                             required
                         />
@@ -123,15 +123,22 @@ const breadcrumbs = [
                                 {{ team.name }}
                             </option>
                         </select>
+
+                        <!-- Mensaje de error -->
+                        <div
+                            v-if="form.errors.id_team"
+                            class="mt-1 text-sm text-red-600"
+                        >
+                            {{ form.errors.id_team }}
+                        </div>
                     </div>
 
                     <!-- Botones -->
                     <div class="flex justify-end gap-3 pt-3">
                         <Link :href="route('admin.presidents.index')">
                             <Button
-
                                 variant="outline"
-                                class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                                class="border-[#D62027] px-4 py-2 text-[#D62027]"
                             >
                                 Cancelar
                             </Button>
@@ -139,7 +146,7 @@ const breadcrumbs = [
 
                         <Button
                             type="submit"
-                            class="px-4 py-2 bg-[#D62027] text-white"
+                            class="bg-[#D62027] px-4 py-2 text-white"
                         >
                             Actualizar
                         </Button>

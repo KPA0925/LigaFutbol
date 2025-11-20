@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
+import { route } from 'ziggy-js';
 
 import {
     ArcElement,
@@ -40,6 +42,15 @@ const props = defineProps<{
     stadiumMatches: { stadium: string; matches: number }[];
 }>();
 
+// 🟢 Traducciones de las estadísticas
+const labelMap: Record<string, string> = {
+    players: 'Jugadores',
+    teams: 'Equipos',
+    goals: 'Goles',
+    comments: 'Comentarios',
+    matches: 'Partidos',
+};
+
 const hueRanges = [
     { min: 0, max: 20 }, // Rojos
     { min: 20, max: 45 }, // Naranjas
@@ -72,7 +83,7 @@ const topScorersData = {
     labels: props.topScorers.map((s) => s.fullname),
     datasets: [
         {
-            label: 'Goles anotados',
+            label: 'Top Goles anotados',
             data: props.topScorers.map((s) => s.goals_count),
             backgroundColor: barColors,
             borderColor: '#003366',
@@ -107,9 +118,21 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold">Estadísticas generales</h1>
 
-                <Button class="px-4 py-2 bg-[#D62027] text-white" variant="outline"><i class="fa-solid fa-download"></i>Exportar Estadísticas</Button>
+                <!-- Exportar SIN filtros -->
+                <a
+                    :href="
+                        route('admin.export.excel', { module: 'statistics' })
+                    "
+                    target="_blank"
+                >
+                    <Button class="bg-[#D62027] px-4 py-2 text-white">
+                        <i class="fa-solid fa-download"></i> Exportar
+                        Estadísticas
+                    </Button>
+                </a>
             </div>
 
+            <!-- 🟢 Tarjetas con nombres en español -->
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 <Card
                     v-for="(value, key) in stats"
@@ -118,7 +141,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                 >
                     <CardContent class="p-3">
                         <h2 class="text-xs uppercase text-gray-500">
-                            {{ key }}
+                            {{ labelMap[key] ?? key }}
                         </h2>
                         <p class="text-xl font-bold">{{ value }}</p>
                     </CardContent>
@@ -138,7 +161,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <Card class="bg-white">
                     <CardContent class="bg-white p-4">
                         <h2 class="mb-4 text-xl font-semibold">
-                            Lista de goleadores
+                            Top Lista de goleadores
                         </h2>
                         <table class="w-full rounded border text-sm">
                             <thead class="bg-gray-100">

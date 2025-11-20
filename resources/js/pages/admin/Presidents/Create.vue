@@ -9,7 +9,7 @@ import { route } from 'ziggy-js';
 defineProps<{ teams: { id: number; name: string }[] }>();
 
 const form = useForm({
-    DNI: '',
+    dni: '',
     name: '',
     lastname: '',
     birth_date: '',
@@ -48,7 +48,8 @@ const breadcrumbs = [
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">DNI</Label>
                         <Input
-                            v-model="form.DNI"
+                            v-model="form.dni"
+                            placeholder="Ej: 1089374352"
                             class="h-11 rounded-lg border-gray-300"
                             required
                         />
@@ -59,6 +60,7 @@ const breadcrumbs = [
                         <Label class="text-gray-700">Nombre</Label>
                         <Input
                             v-model="form.name"
+                            placeholder="Ej: Juan"
                             class="h-11 rounded-lg border-gray-300"
                             required
                         />
@@ -69,6 +71,7 @@ const breadcrumbs = [
                         <Label class="text-gray-700">Apellido</Label>
                         <Input
                             v-model="form.lastname"
+                            placeholder="Ej: Pérez"
                             class="h-11 rounded-lg border-gray-300"
                             required
                         />
@@ -80,6 +83,7 @@ const breadcrumbs = [
                         <Input
                             type="date"
                             v-model="form.birth_date"
+                            placeholder="Ej: 1990-01-01"
                             class="h-11 rounded-lg border-gray-300"
                             required
                         />
@@ -91,6 +95,7 @@ const breadcrumbs = [
                         <Input
                             type="date"
                             v-model="form.elected_date"
+                            placeholder="Ej: 2023-05-15"
                             class="h-11 rounded-lg border-gray-300"
                             required
                         />
@@ -109,13 +114,21 @@ const breadcrumbs = [
                                 {{ team.name }}
                             </option>
                         </select>
+
+                        <!-- Mensaje de error -->
+                        <div
+                            v-if="form.errors.id_team"
+                            class="mt-1 text-sm text-red-600"
+                        >
+                            {{ form.errors.id_team }}
+                        </div>
                     </div>
 
                     <!-- Botones -->
                     <div class="flex justify-end gap-3 pt-3">
                         <Link :href="route('admin.presidents.index')">
                             <Button
-                                class="px-4 py-2 text-[#D62027] border-[#D62027]"
+                                class="border-[#D62027] px-4 py-2 text-[#D62027]"
                                 variant="outline"
                             >
                                 Cancelar
@@ -124,7 +137,7 @@ const breadcrumbs = [
 
                         <Button
                             type="submit"
-                            class="px-4 py-2 bg-[#D62027] text-white"
+                            class="bg-[#D62027] px-4 py-2 text-white"
                         >
                             Guardar
                         </Button>
