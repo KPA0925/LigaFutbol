@@ -9,20 +9,81 @@ class TeamSeeder extends Seeder
 {
     public function run(): void
     {
-        $cities = [
-            'Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena',
-            'Cúcuta', 'Bucaramanga', 'Santa Marta', 'Pereira', 'Manizales',
-            'Neiva', 'Ibagué', 'Montería', 'Tunja', 'Villavicencio'
+        $teams = [
+            [
+                'name' => 'Millonarios FC',
+                'founded_date' => '1946-06-18',
+                'city' => 'Bogotá',
+                'stadium' => 'Estadio Nemesio Camacho El Campín',
+                'capacity' => 36000,
+            ],
+            [
+                'name' => 'Atlético Nacional',
+                'founded_date' => '1947-04-07',
+                'city' => 'Medellín',
+                'stadium' => 'Estadio Atanasio Girardot',
+                'capacity' => 40500,
+            ],
+            [
+                'name' => 'Deportivo Cali',
+                'founded_date' => '1912-11-23',
+                'city' => 'Cali',
+                'stadium' => 'Estadio Deportivo Cali',
+                'capacity' => 52000,
+            ],
+            [
+                'name' => 'Junior FC',
+                'founded_date' => '1924-08-07',
+                'city' => 'Barranquilla',
+                'stadium' => 'Estadio Metropolitano Roberto Meléndez',
+                'capacity' => 46500,
+            ],
+            [
+                'name' => 'Independiente Santa Fe',
+                'founded_date' => '1941-02-28',
+                'city' => 'Bogotá',
+                'stadium' => 'Estadio Nemesio Camacho El Campín',
+                'capacity' => 36000,
+            ],
+            [
+                'name' => 'Once Caldas',
+                'founded_date' => '1961-03-17',
+                'city' => 'Manizales',
+                'stadium' => 'Estadio Palogrande',
+                'capacity' => 32000,
+            ],
+            [
+                'name' => 'Deportes Tolima',
+                'founded_date' => '1954-12-18',
+                'city' => 'Ibagué',
+                'stadium' => 'Estadio Manuel Murillo Toro',
+                'capacity' => 28000,
+            ],
+            [
+                'name' => 'Atlético Bucaramanga',
+                'founded_date' => '1949-03-11',
+                'city' => 'Bucaramanga',
+                'stadium' => 'Estadio Alfonso López',
+                'capacity' => 25000,
+            ],
+            [
+                'name' => 'Unión Magdalena',
+                'founded_date' => '1950-04-20',
+                'city' => 'Santa Marta',
+                'stadium' => 'Estadio Sierra Nevada',
+                'capacity' => 12000,
+            ],
+            [
+                'name' => 'Pereira FC',
+                'founded_date' => '1944-02-12',
+                'city' => 'Pereira',
+                'stadium' => 'Estadio Hernán Ramírez Villegas',
+                'capacity' => 30000,
+            ],
         ];
 
-        for ($i = 1; $i <= 15; $i++) {
-            Team::create([
-                'name' => "Equipo $i",
-                'founded_date' => fake()->date(),
-                'city' => $cities[$i - 1],
-                'stadium' => "Estadio $i",
-                'capacity' => rand(15000, 60000),
-            ]);
+        foreach ($teams as $team) {
+            Team::create($team);
         }
     }
 }
