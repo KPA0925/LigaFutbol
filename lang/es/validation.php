@@ -15,7 +15,7 @@ return [
     'array'                  => 'El campo :attribute debe ser un conjunto.',
     'ascii'                  => 'El campo :attribute solo debe contener caracteres alfanuméricos y símbolos de un solo byte.',
     'before'                 => 'El campo :attribute debe ser una fecha anterior a :date.',
-    'before_or_equal'        => 'El campo :attribute debe ser una fecha anterior o igual a :date.',
+    'before_or_equal'        => 'El campo :attribute debe ser una fecha anterior o igual a hoy',
     'between'                => [
         'array'   => 'El campo :attribute tiene que tener entre :min - :max elementos.',
         'file'    => 'El campo :attribute debe pesar entre :min - :max kilobytes.',

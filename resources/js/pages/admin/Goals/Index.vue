@@ -265,7 +265,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     colspan="6"
                                     class="p-6 text-center text-gray-500"
                                 >
-                                    No hay goles registrados.
+                                    No hay resultados.
                                 </td>
                             </tr>
                         </tbody>

@@ -82,6 +82,12 @@ const breadcrumbs = [
                             class="h-11 rounded-lg border-gray-300"
                             required
                         />
+                        <p
+                            v-if="form.errors.birth_date"
+                            class="text-red-600 text-sm mt-1"
+                        >
+                            {{ form.errors.birth_date }}
+                        </p>
                     </div>
 
                     <div class="flex flex-col gap-1">
@@ -93,6 +99,12 @@ const breadcrumbs = [
                             class="h-11 rounded-lg border-gray-300"
                             required
                         />
+                        <p
+                            v-if="form.errors.elected_date"
+                            class="text-red-600 text-sm mt-1"
+                        >
+                            {{ form.errors.elected_date }}
+                        </p>
                     </div>
 
                     <div class="flex flex-col gap-1">

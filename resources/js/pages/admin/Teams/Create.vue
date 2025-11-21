@@ -40,6 +40,7 @@ const breadcrumbs = [
                 </p>
 
                 <form @submit.prevent="submit" class="space-y-5">
+                    <!-- Nombre -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Nombre del equipo</Label>
                         <Input
@@ -48,8 +49,15 @@ const breadcrumbs = [
                             class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
                             required
                         />
+                        <p
+                            v-if="form.errors.name"
+                            class="text-red-600 text-sm mt-1"
+                        >
+                            {{ form.errors.name }}
+                        </p>
                     </div>
 
+                    <!-- Fecha de fundación -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Fecha de fundación</Label>
                         <Input
@@ -58,8 +66,15 @@ const breadcrumbs = [
                             class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
                             required
                         />
+                        <p
+                            v-if="form.errors.founded_date"
+                            class="text-red-600 text-sm mt-1"
+                        >
+                            {{ form.errors.founded_date }}
+                        </p>
                     </div>
 
+                    <!-- Ciudad -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Ciudad</Label>
                         <Input
@@ -68,8 +83,15 @@ const breadcrumbs = [
                             class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
                             required
                         />
+                        <p
+                            v-if="form.errors.city"
+                            class="text-red-600 text-sm mt-1"
+                        >
+                            {{ form.errors.city }}
+                        </p>
                     </div>
 
+                    <!-- Estadio -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Estadio</Label>
                         <Input
@@ -78,8 +100,15 @@ const breadcrumbs = [
                             class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
                             required
                         />
+                        <p
+                            v-if="form.errors.stadium"
+                            class="text-red-600 text-sm mt-1"
+                        >
+                            {{ form.errors.stadium }}
+                        </p>
                     </div>
 
+                    <!-- Capacidad -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Capacidad</Label>
                         <Input
@@ -90,8 +119,15 @@ const breadcrumbs = [
                             class="h-11 rounded-lg border-gray-300 focus:border-blue-500"
                             required
                         />
+                        <p
+                            v-if="form.errors.capacity"
+                            class="text-red-600 text-sm mt-1"
+                        >
+                            {{ form.errors.capacity }}
+                        </p>
                     </div>
 
+                    <!-- Botones -->
                     <div class="flex justify-end gap-3 pt-3">
                         <Link :href="route('admin.teams.index')">
                             <Button

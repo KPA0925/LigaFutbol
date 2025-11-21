@@ -226,7 +226,7 @@ const breadcrumbs = [{ title: 'Goles', href: dashboard().url }];
                 v-else
                 class="rounded-xl border bg-white p-6 shadow-md text-center text-gray-500"
             >
-                No hay goles que coincidan con la búsqueda.
+                No hay resultados.
             </div>
         </div>
     </AppLayout>

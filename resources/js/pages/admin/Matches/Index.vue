@@ -67,29 +67,30 @@ function clearFilters() {
 }
 
 const filtered = computed(() => {
-    return props.matches.filter((m) => {
-        let ok = true;
+    return props.matches
+        .filter((m) => {
+            let ok = true;
 
-        if (appliedSeason.value !== null)
-            ok = ok && Number(m.season) === Number(appliedSeason.value);
+            if (appliedSeason.value !== null)
+                ok = ok && Number(m.season) === Number(appliedSeason.value);
 
-        if (appliedTeam.value) {
-            const both =
-                `${m.home_team?.name ?? ''} ${m.away_team?.name ?? ''}`.toLowerCase();
-            ok = ok && both.includes(appliedTeam.value);
-        }
+            if (appliedTeam.value) {
+                const both =
+                    `${m.home_team?.name ?? ''} ${m.away_team?.name ?? ''}`.toLowerCase();
+                ok = ok && both.includes(appliedTeam.value);
+            }
 
-        if (appliedDate.value) {
-            const matchDate = new Date(m.match_date_time);
-            const y = matchDate.getFullYear();
-            const mth = String(matchDate.getMonth() + 1).padStart(2, '0');
-            const d = String(matchDate.getDate()).padStart(2, '0');
-            const matchFormatted = `${y}-${mth}-${d}`;
-            ok = ok && matchFormatted === appliedDate.value;
-        }
+            if (appliedDate.value) {
+                const matchDate = new Date(m.match_date_time);
+                const y = matchDate.getFullYear();
+                const mth = String(matchDate.getMonth() + 1).padStart(2, '0');
+                const d = String(matchDate.getDate()).padStart(2, '0');
+                const matchFormatted = `${y}-${mth}-${d}`;
+                ok = ok && matchFormatted === appliedDate.value;
+            }
 
-        return ok;
-    });
+            return ok;
+        });
 });
 
 function formatDate(datetime: string) {
@@ -210,12 +211,14 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <h2 class="text-lg font-semibold">Listado de partidos</h2>
 
                     <a
-                        :href="route('admin.export.excel', {
-                            module: 'matches',
-                            season: appliedSeason || undefined,
-                            team: appliedTeam || undefined,
-                            date: appliedDate || undefined
-                        })"
+                        :href="
+                            route('admin.export.excel', {
+                                module: 'matches',
+                                season: appliedSeason || undefined,
+                                team: appliedTeam || undefined,
+                                date: appliedDate || undefined,
+                            })
+                        "
                         target="_blank"
                     >
                         <Button class="bg-[#D62027] px-4 py-2 text-white">
@@ -268,10 +271,17 @@ const breadcrumbs: BreadcrumbItem[] = [
 
                                 <td class="flex justify-center gap-2 p-3">
                                     <Link
-                                        :href="route('admin.matches.edit', match.id)"
+                                        :href="
+                                            route(
+                                                'admin.matches.edit',
+                                                match.id,
+                                            )
+                                        "
                                     >
                                         <Button size="sm">
-                                            <i class="fa-regular fa-pen-to-square"></i>
+                                            <i
+                                                class="fa-regular fa-pen-to-square"
+                                            ></i>
                                         </Button>
                                     </Link>
 

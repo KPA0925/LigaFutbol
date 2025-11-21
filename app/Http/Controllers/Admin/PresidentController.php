@@ -34,8 +34,8 @@ class PresidentController extends Controller
             'dni' => 'required|string|max:50',
             'name' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'birth_date' => 'required|date',
-            'elected_date' => 'required|date',
+            'birth_date' => 'required|date|before_or_equal:today',
+            'elected_date' => 'required|date|before_or_equal:today',
             'id_team' => 'required|exists:teams,id',
         ]);
 

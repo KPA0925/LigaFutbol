@@ -86,7 +86,16 @@ function openDeleteModal(id: number) {
 
 function confirmDelete() {
     if (teamToDelete.value) {
-        router.delete(route('admin.teams.destroy', teamToDelete.value));
+        router.delete(route('admin.teams.destroy', teamToDelete.value), {
+            preserveScroll: true,
+            onSuccess: () => {
+                results.value = results.value.filter(t => t.id !== teamToDelete.value);
+
+                if ((currentPage.value - 1) * itemsPerPage >= results.value.length) {
+                    currentPage.value = Math.max(1, currentPage.value - 1);
+                }
+            },
+        });
     }
     showDeleteModal.value = false;
 }

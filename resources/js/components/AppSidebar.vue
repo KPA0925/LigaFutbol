@@ -83,7 +83,7 @@ const defaultClass = 'hover:bg-[#B81E23] transition';
             <img
                 src="/img/logo.webp"
                 alt="Logo"
-                class="mb-4 h-10 object-contain"
+                class="mb-4 h-16 object-contain"
             />
         </div>
 

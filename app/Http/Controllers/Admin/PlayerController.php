@@ -32,7 +32,7 @@ class PlayerController extends Controller
     {
         $validated = $request->validate([
             'fullname' => 'required|string|max:255',
-            'birth_date' => 'required|date',
+            'birth_date' => 'required|date|before_or_equal:today',
             'position' => 'required|string|max:255',
             'id_team' => 'required|exists:teams,id',
         ]);

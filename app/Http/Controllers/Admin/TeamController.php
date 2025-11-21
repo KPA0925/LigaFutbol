@@ -30,7 +30,7 @@ class TeamController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'founded_date' => 'required|date',
+            'founded_date' => 'required|date|before_or_equal:today',
             'city' => 'required|string|max:255',
             'stadium' => 'required|string|max:255',
             'capacity' => 'required|integer|min:1000',

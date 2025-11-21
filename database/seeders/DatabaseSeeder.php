@@ -12,12 +12,12 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RolePermissionSeeder::class,
-            TeamSeeder::class,
-            PresidentSeeder::class,
-            PlayerSeeder::class,
-            MatchSeeder::class,
-            GoalSeeder::class,
-            CommentSeeder::class,
+            // TeamSeeder::class,
+            // PresidentSeeder::class,
+            // PlayerSeeder::class,
+            // MatchSeeder::class,
+            // GoalSeeder::class,
+            // CommentSeeder::class,
         ]);
     }
 }

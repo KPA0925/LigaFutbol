@@ -235,7 +235,7 @@ const breadcrumbs = [{ title: 'Presidentes', href: dashboard().url }];
 
                     <p
                         v-if="filtered.length === 0"
-                        class="col-span-full text-center text-gray-500 py-10"
+                        class="col-span-full text-center text-gray-500 py-5"
                     >
                         No hay resultados.
                     </p>

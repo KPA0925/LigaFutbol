@@ -20,12 +20,13 @@ class FootballMatchController extends Controller
             'homeTeam',
             'awayTeam',
             'goals',
-        ])->get()
+        ])->orderBy('created_at', 'desc')->get()
             ->map(function ($match) {
                 return [
                     'id' => $match->id,
                     'season' => $match->season,
                     'match_date_time' => $match->match_date_time,
+                    // 'created_at' => $match->created_at,
                     'home_team' => $match->homeTeam,
                     'away_team' => $match->awayTeam,
                     'goal_home' => $match->homeGoals()->count(),
@@ -54,7 +55,15 @@ class FootballMatchController extends Controller
             'id_away_team' => 'required|exists:teams,id|different:id_home_team',
         ]);
 
-        $matchDate = \Carbon\Carbon::parse($request->match_date_time)->toDateString();
+        $matchDateTime = \Carbon\Carbon::parse($request->match_date_time);
+
+        if ($matchDateTime->isBefore(today())) {
+            throw ValidationException::withMessages([
+                'match_date_time' => 'No se pueden programar partidos en fechas anteriores a hoy.',
+            ]);
+        }
+
+        $matchDate = $matchDateTime->toDateString();
 
         $sameDayMatch = FootballMatchTeam::where(function ($q) use ($request) {
             $q->where(function ($sub) use ($request) {
@@ -118,6 +127,7 @@ class FootballMatchController extends Controller
         return redirect()->route('admin.matches.index')
             ->with('success', 'Partido creado correctamente');
     }
+
 
     public function edit($id)
     {

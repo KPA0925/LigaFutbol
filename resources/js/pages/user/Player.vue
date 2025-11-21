@@ -226,9 +226,9 @@ const breadcrumbs = [{ title: 'Jugadores', href: dashboard().url }];
 
             <p
                 v-if="filtered.length === 0"
-                class="text-center text-gray-500 mt-10 text-lg"
+                class="rounded-xl border bg-white p-6 text-center text-gray-500 shadow-md"
             >
-                No hay jugadores que coincidan con la búsqueda.
+                No hay resultados.
             </p>
         </div>
     </AppLayout>

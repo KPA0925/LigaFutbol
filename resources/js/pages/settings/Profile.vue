@@ -126,7 +126,7 @@ const emailChanged = page.props.email_changed;
                 </Form>
             </div>
 
-            <DeleteUser />
+            <!-- <DeleteUser /> -->
         </SettingsLayout>
     </AppLayout>
 </template>
