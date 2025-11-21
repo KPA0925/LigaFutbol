@@ -158,7 +158,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <Card class="bg-white">
                     <CardContent class="bg-white p-4">
                         <h2 class="mb-4 text-xl font-semibold">
-                            Top Lista de goleadores
+                            Top 5 Lista de goleadores
                         </h2>
                         <table class="w-full rounded border text-sm">
                             <thead class="bg-gray-100">
