@@ -12,13 +12,13 @@ class UserCommentController extends Controller
     public function index()
     {
         $comments = Comment::with('user')
-            ->orderBy('created_at', 'desc') // Cambiado de 'id' a 'created_at'
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($comment) {
                 return [
                     'id' => $comment->id,
                     'description' => $comment->description,
-                    'created_at' => $comment->created_at->toISOString(), // Añadido
+                    'created_at' => $comment->created_at->toISOString(),
                     'user' => $comment->user ? [
                         'id' => $comment->user->id,
                         'name' => $comment->user->name,

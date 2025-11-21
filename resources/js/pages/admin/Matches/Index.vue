@@ -22,7 +22,6 @@ interface Match {
 
 const props = defineProps<{ matches: Match[] }>();
 
-// ---------- MODAL ELIMINAR ----------
 const showDeleteModal = ref(false);
 const matchToDelete = ref<number | null>(null);
 
@@ -42,7 +41,6 @@ function cancelDelete() {
     showDeleteModal.value = false;
 }
 
-// ---------- Filtros ----------
 const searchSeason = ref<number | null>(null);
 const searchTeam = ref('');
 const searchDate = ref<string>('');
@@ -54,7 +52,7 @@ const appliedDate = ref('');
 function applySearch() {
     appliedSeason.value = searchSeason.value;
     appliedTeam.value = searchTeam.value.trim().toLowerCase();
-    appliedDate.value = searchDate.value.trim(); // YYYY-MM-DD
+    appliedDate.value = searchDate.value.trim();
     currentPage.value = 1;
 }
 
@@ -68,7 +66,6 @@ function clearFilters() {
     currentPage.value = 1;
 }
 
-// ---------- Filtrado ----------
 const filtered = computed(() => {
     return props.matches.filter((m) => {
         let ok = true;
@@ -95,7 +92,6 @@ const filtered = computed(() => {
     });
 });
 
-// ---------- Utilidades ----------
 function formatDate(datetime: string) {
     const d = new Date(datetime);
 
@@ -119,7 +115,6 @@ function getMatchStatus(dateStr: string) {
     return 'Partido terminado';
 }
 
-// ---------- Paginación ----------
 const itemsPerPage = 5;
 const currentPage = ref(1);
 
@@ -137,7 +132,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head title="Partidos" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <!-- MODAL GLOBAL -->
         <ConfirmDeleteModal
             :show="showDeleteModal"
             title="Eliminar Partido"
@@ -159,7 +153,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </Link>
             </div>
 
-            <!-- Filtros -->
             <div class="rounded-xl border bg-white p-6 shadow-md">
                 <h2 class="mb-4 text-lg font-semibold">Filtros de Búsqueda</h2>
 
@@ -212,12 +205,10 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
             </div>
 
-            <!-- Tabla -->
             <div class="rounded-xl border bg-white p-6 shadow-md">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="text-lg font-semibold">Listado de partidos</h2>
 
-                    <!-- ✔ BOTÓN EXPORTAR EXCEL -->
                     <a
                         :href="route('admin.export.excel', {
                             module: 'matches',
@@ -305,7 +296,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </table>
                 </div>
 
-                <!-- Paginación -->
                 <div class="mt-4 flex items-center justify-between text-sm">
                     <span>
                         Mostrando {{ paginated.length }} de

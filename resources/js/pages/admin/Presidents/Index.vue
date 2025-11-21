@@ -20,9 +20,6 @@ const props = defineProps<{
     presidents: President[];
 }>();
 
-/* -------------------------
-    🟦 Filtros inputs
---------------------------*/
 const filterDni = ref('');
 const filterName = ref('');
 const filterLastname = ref('');
@@ -30,9 +27,6 @@ const filterBirth = ref('');
 const filterElected = ref('');
 const filterTeam = ref('');
 
-/* -------------------------
-    🟦 Filtros aplicados (CONGELADOS)
---------------------------*/
 const activeFilters = ref({
     dni: '',
     name: '',
@@ -44,9 +38,6 @@ const activeFilters = ref({
 
 const appliedFilters = ref(false);
 
-/* -------------------------
-   🔍 Lógica de filtrado usando activeFilters
---------------------------*/
 const filtered = computed(() => {
     if (!appliedFilters.value) return props.presidents;
 
@@ -69,9 +60,6 @@ const filtered = computed(() => {
     });
 });
 
-/* -------------------------
-   🔘 Botón Buscar → congela filtros
---------------------------*/
 function applyFilters() {
     appliedFilters.value = true;
 
@@ -87,9 +75,6 @@ function applyFilters() {
     currentPage.value = 1;
 }
 
-/* -------------------------
-   ♻ Limpiar filtros (todo vuelve al inicio)
---------------------------*/
 function clearFilters() {
     filterDni.value = '';
     filterName.value = '';
@@ -111,9 +96,6 @@ function clearFilters() {
     currentPage.value = 1;
 }
 
-/* -------------------------
-   📄 Paginación
---------------------------*/
 const itemsPerPage = 5;
 const currentPage = ref(1);
 
@@ -122,9 +104,6 @@ const paginated = computed(() => {
     return filtered.value.slice(start, start + itemsPerPage);
 });
 
-/* -------------------------
-   ❌ Modal de eliminación
---------------------------*/
 const showDeleteModal = ref(false);
 const selectedId = ref<number | null>(null);
 
@@ -154,7 +133,6 @@ const breadcrumbs = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
-            <!-- 🧭 Encabezado -->
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-800">
                     Presidentes de la liga
@@ -167,7 +145,6 @@ const breadcrumbs = [
                 </Link>
             </div>
 
-            <!-- 🔍 Filtros -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
@@ -247,7 +224,6 @@ const breadcrumbs = [
                     </div>
                 </div>
 
-                <!-- Botones -->
                 <div class="mt-6 flex gap-3">
                     <Button
                         class="border-[#D62027] px-4 py-2 text-[#D62027]"
@@ -266,7 +242,6 @@ const breadcrumbs = [
                 </div>
             </div>
 
-            <!-- 📋 Listado -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
@@ -364,7 +339,6 @@ const breadcrumbs = [
                     </table>
                 </div>
 
-                <!-- Pagination -->
                 <div
                     class="mt-4 flex items-center justify-between text-sm text-gray-600"
                 >
@@ -397,7 +371,6 @@ const breadcrumbs = [
             </div>
         </div>
 
-        <!-- 🌟 Modal de eliminación -->
         <ConfirmDeleteModal
             :show="showDeleteModal"
             title="Eliminar presidente"

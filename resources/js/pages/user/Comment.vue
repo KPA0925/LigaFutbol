@@ -61,7 +61,6 @@ const breadcrumbs = [{ title: 'Comentarios', href: dashboard().url }];
     <Head title="Comentarios" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto max-w-4xl space-y-6 p-6">
-            <!-- 💬 TÍTULO -->
             <div class="flex items-center gap-3">
                 <div
                     class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-600 text-white"
@@ -71,7 +70,6 @@ const breadcrumbs = [{ title: 'Comentarios', href: dashboard().url }];
                 <h1 class="text-3xl font-bold text-gray-800">Comentarios</h1>
             </div>
 
-            <!-- ✍️ FORMULARIO -->
             <div class="rounded-xl border border-gray-200 bg-white p-6 shadow">
                 <form @submit.prevent="submit" class="space-y-4">
                     <textarea
@@ -95,7 +93,6 @@ const breadcrumbs = [{ title: 'Comentarios', href: dashboard().url }];
                 </form>
             </div>
 
-            <!-- 📋 LISTA DE COMENTARIOS -->
             <div class="space-y-4">
                 <div
                     v-for="c in props.comments"
@@ -103,14 +100,12 @@ const breadcrumbs = [{ title: 'Comentarios', href: dashboard().url }];
                     class="rounded-xl border border-gray-200 bg-white p-6 shadow transition hover:shadow-md"
                 >
                     <div class="flex items-start gap-4">
-                        <!-- Avatar -->
                         <div
                             class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 font-semibold text-lg"
                         >
                             {{ getInitials(c.user?.name) }}
                         </div>
 
-                        <!-- Contenido -->
                         <div class="flex-1">
                             <div
                                 class="mb-2 flex items-center justify-between"
@@ -138,7 +133,6 @@ const breadcrumbs = [{ title: 'Comentarios', href: dashboard().url }];
                     </div>
                 </div>
 
-                <!-- Sin comentarios -->
                 <div
                     v-if="props.comments.length === 0"
                     class="rounded-xl border border-gray-200 bg-white p-12 text-center"

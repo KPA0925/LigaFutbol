@@ -18,21 +18,14 @@ const props = defineProps<{
     comments: Comment[];
 }>();
 
-/* -------------------------
-   🟦 Filtros (solo usuario y descripción)
---------------------------*/
 const searchUser = ref('');
 const searchDescription = ref('');
 
-/* Aplicados solo al hacer buscar */
 const appliedFilters = ref({
     user: '',
     desc: '',
 });
 
-/* -------------------------
-   🕒 Formateo fecha para tabla
---------------------------*/
 function formatDate(dateStr: string) {
     const date = new Date(dateStr);
 
@@ -46,18 +39,13 @@ function formatDate(dateStr: string) {
     return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
-/* -------------------------
-   🔍 Filtrado real (SIN FECHA)
---------------------------*/
 const filtered = computed(() => {
     return props.comments.filter((c) => {
         return (
-            // Usuario
             (appliedFilters.value.user === '' ||
                 (c.user?.name ?? '')
                     .toLowerCase()
                     .includes(appliedFilters.value.user.toLowerCase())) &&
-            // Descripción
             (appliedFilters.value.desc === '' ||
                 c.description
                     .toLowerCase()
@@ -66,9 +54,6 @@ const filtered = computed(() => {
     });
 });
 
-/* -------------------------
-   📄 Paginación
---------------------------*/
 const itemsPerPage = 5;
 const currentPage = ref(1);
 
@@ -77,9 +62,6 @@ const paginated = computed(() => {
     return filtered.value.slice(start, start + itemsPerPage);
 });
 
-/* -------------------------
-   🔎 Aplicar filtros
---------------------------*/
 function applyFilters() {
     appliedFilters.value = {
         user: searchUser.value,
@@ -89,9 +71,6 @@ function applyFilters() {
     currentPage.value = 1;
 }
 
-/* -------------------------
-   ♻ Limpiar filtros
---------------------------*/
 function clearFilters() {
     searchUser.value = '';
     searchDescription.value = '';
@@ -104,9 +83,6 @@ function clearFilters() {
     currentPage.value = 1;
 }
 
-/* -------------------------
-   ❌ Modal eliminar
---------------------------*/
 const showDeleteModal = ref(false);
 const deletingId = ref<number | null>(null);
 
@@ -136,7 +112,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
-            <!-- 🧭 Encabezado -->
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-800">Comentarios</h1>
 
@@ -147,7 +122,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </Link>
             </div>
 
-            <!-- 🔍 Card Filtros -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
@@ -156,7 +130,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </h2>
 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <!-- Usuario -->
                     <div>
                         <label class="text-sm font-medium text-gray-600"
                             >Usuario</label
@@ -169,7 +142,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                         />
                     </div>
 
-                    <!-- Descripción -->
                     <div>
                         <label class="text-sm font-medium text-gray-600"
                             >Descripción</label
@@ -183,7 +155,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
                 </div>
 
-                <!-- Botones -->
                 <div class="mt-6 flex gap-3">
                     <Button
                         class="border-[#D62027] px-4 py-2 text-[#D62027]"
@@ -202,7 +173,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
             </div>
 
-            <!-- 📋 Listado -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
@@ -287,7 +257,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </table>
                 </div>
 
-                <!-- Pagination -->
                 <div
                     class="mt-4 flex items-center justify-between text-sm text-gray-600"
                 >
@@ -321,7 +290,6 @@ const breadcrumbs: BreadcrumbItem[] = [
             </div>
         </div>
 
-        <!-- 🟥 MODAL -->
         <ConfirmDeleteModal
             :show="showDeleteModal"
             title="Eliminar comentario"

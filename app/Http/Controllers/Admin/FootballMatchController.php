@@ -62,7 +62,7 @@ class FootballMatchController extends Controller
                     ->where('id_away_team', $request->id_away_team);
             })
                 ->orWhere(function ($sub) use ($request) {
-                    $sub->where('id_home_team', $request->id_away_team) // inverso
+                    $sub->where('id_home_team', $request->id_away_team)
                         ->where('id_away_team', $request->id_home_team);
                 });
         })

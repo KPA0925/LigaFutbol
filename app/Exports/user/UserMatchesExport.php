@@ -117,7 +117,7 @@ class UserMatchesExport implements FromCollection, WithHeadings, WithEvents
                     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'color' => ['rgb' => 'D62027'], // Color rojo del tema
+                        'color' => ['rgb' => 'D62027'],
                     ],
                 ]);
 

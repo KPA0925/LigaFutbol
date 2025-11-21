@@ -15,7 +15,6 @@ class GoalSeeder extends Seeder
 
         foreach ($matches as $match) {
 
-            // entre 0 y 5 goles por partido
             $numGoals = rand(0, 5);
 
             for ($i = 0; $i < $numGoals; $i++) {

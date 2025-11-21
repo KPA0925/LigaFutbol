@@ -22,14 +22,12 @@ class UserPlayersExport implements FromCollection, WithHeadings, WithEvents
 
     public function collection()
     {
-        // Normalizador PHP
         $normalize = function ($str) {
             $str = strtolower($str ?? '');
             $str = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
             return trim($str);
         };
 
-        // Normalizador SQL
         $sqlNormalize = "
             LOWER(
                 TRANSLATE(%s,
@@ -41,24 +39,20 @@ class UserPlayersExport implements FromCollection, WithHeadings, WithEvents
 
         $q = Player::with('team');
 
-        // FILTRO NOMBRE
         if (!empty($this->f['name'])) {
             $value = $normalize($this->f['name']);
             $q->whereRaw(sprintf($sqlNormalize, 'fullname') . " LIKE ?", ["%$value%"]);
         }
 
-        // FILTRO FECHA NACIMIENTO
         if (!empty($this->f['birth'])) {
             $q->where('birth_date', 'LIKE', $this->f['birth'] . '%');
         }
 
-        // FILTRO POSICIÓN
         if (!empty($this->f['position'])) {
             $value = $normalize($this->f['position']);
             $q->whereRaw(sprintf($sqlNormalize, 'position') . " LIKE ?", ["%$value%"]);
         }
 
-        // FILTRO EQUIPO
         if (!empty($this->f['team'])) {
             $value = $normalize($this->f['team']);
             $q->whereHas('team', function ($t) use ($value, $sqlNormalize) {
@@ -90,17 +84,15 @@ class UserPlayersExport implements FromCollection, WithHeadings, WithEvents
                 $sheet   = $event->sheet->getDelegate();
                 $lastRow = $sheet->getHighestRow();
 
-                // Encabezado con color rojo
                 $sheet->getStyle('A1:E1')->applyFromArray([
                     'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'color' => ['rgb' => 'D62027'], // Color rojo del tema
+                        'color' => ['rgb' => 'D62027'],
                     ],
                 ]);
 
-                // Filas alternadas
                 for ($row = 2; $row <= $lastRow; $row++) {
                     $sheet->getStyle("A{$row}:E{$row}")->applyFromArray([
                         'fill' => [
@@ -110,7 +102,6 @@ class UserPlayersExport implements FromCollection, WithHeadings, WithEvents
                     ]);
                 }
 
-                // Bordes
                 $sheet->getStyle("A1:E{$lastRow}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
@@ -120,12 +111,10 @@ class UserPlayersExport implements FromCollection, WithHeadings, WithEvents
                     ],
                 ]);
 
-                // Centramos todo
                 $sheet->getStyle("A1:E{$lastRow}")
                     ->getAlignment()
                     ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                // AutoSize
                 foreach (range('A', 'E') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }

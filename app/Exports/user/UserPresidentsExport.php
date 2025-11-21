@@ -24,47 +24,28 @@ class UserPresidentsExport implements FromCollection, WithHeadings, WithEvents
     {
         $q = President::with('team');
 
-        /** -----------------------------
-         *  FILTRO: DNI
-         *  (números no requieren lower)
-         * ----------------------------- */
         if (!empty($this->filters['dni'])) {
             $q->whereRaw("CAST(dni AS TEXT) LIKE ?", ["%{$this->filters['dni']}%"]);
         }
 
-        /** -----------------------------
-         *  FILTRO: NOMBRE (case-insensitive)
-         * ----------------------------- */
         if (!empty($this->filters['name'])) {
             $text = strtolower($this->filters['name']);
             $q->whereRaw("LOWER(name) LIKE ?", ["%{$text}%"]);
         }
 
-        /** -----------------------------
-         *  FILTRO: APELLIDO (case-insensitive)
-         * ----------------------------- */
         if (!empty($this->filters['lastname'])) {
             $text = strtolower($this->filters['lastname']);
             $q->whereRaw("LOWER(lastname) LIKE ?", ["%{$text}%"]);
         }
 
-        /** -----------------------------
-         *  FILTRO: Nacimiento
-         * ----------------------------- */
         if (!empty($this->filters['birth'])) {
             $q->whereDate('birth_date', $this->filters['birth']);
         }
 
-        /** -----------------------------
-         *  FILTRO: Elegido
-         * ----------------------------- */
         if (!empty($this->filters['elected'])) {
             $q->whereDate('elected_date', $this->filters['elected']);
         }
 
-        /** -----------------------------
-         *  FILTRO: EQUIPO (case-insensitive)
-         * ----------------------------- */
         if (!empty($this->filters['team'])) {
             $text = strtolower($this->filters['team']);
 
@@ -105,7 +86,6 @@ class UserPresidentsExport implements FromCollection, WithHeadings, WithEvents
                 $sheet   = $event->sheet->getDelegate();
                 $lastRow = $sheet->getHighestRow();
 
-                // Header con color rojo
                 $sheet->getStyle('A1:F1')->applyFromArray([
                     'font' => [
                         'bold' => true,
@@ -116,11 +96,10 @@ class UserPresidentsExport implements FromCollection, WithHeadings, WithEvents
                     ],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'color' => ['rgb' => 'D62027'] // Color rojo del tema
+                        'color' => ['rgb' => 'D62027']
                     ],
                 ]);
 
-                // Alternating rows
                 for ($row = 2; $row <= $lastRow; $row++) {
                     $sheet->getStyle("A{$row}:F{$row}")->applyFromArray([
                         'fill' => [
@@ -130,7 +109,6 @@ class UserPresidentsExport implements FromCollection, WithHeadings, WithEvents
                     ]);
                 }
 
-                // Borders
                 $sheet->getStyle("A1:F{$lastRow}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
@@ -140,12 +118,10 @@ class UserPresidentsExport implements FromCollection, WithHeadings, WithEvents
                     ],
                 ]);
 
-                // Center text
                 $sheet->getStyle("A1:F{$lastRow}")
                     ->getAlignment()
                     ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                // Auto-size
                 foreach (range('A', 'F') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }

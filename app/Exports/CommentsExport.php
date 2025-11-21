@@ -24,7 +24,6 @@ class CommentsExport implements FromCollection, WithHeadings, WithEvents
     {
         $q = Comment::query()->with('user');
 
-        // 🔍 FILTRO USUARIO (case-insensitive)
         if (!empty($this->filters['user'])) {
             $value = strtolower($this->filters['user']);
 
@@ -33,7 +32,6 @@ class CommentsExport implements FromCollection, WithHeadings, WithEvents
             });
         }
 
-        // 🔍 FILTRO DESCRIPCIÓN (case-insensitive)
         if (!empty($this->filters['desc'])) {
             $value = strtolower($this->filters['desc']);
 

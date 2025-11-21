@@ -42,7 +42,6 @@ const props = defineProps<{
     stadiumMatches: { stadium: string; matches: number }[];
 }>();
 
-// 🟢 Traducciones de las estadísticas
 const labelMap: Record<string, string> = {
     players: 'Jugadores',
     teams: 'Equipos',
@@ -52,9 +51,9 @@ const labelMap: Record<string, string> = {
 };
 
 const hueRanges = [
-    { min: 0, max: 20 }, // Rojos
-    { min: 20, max: 45 }, // Naranjas
-    { min: 190, max: 240 }, // Azules
+    { min: 0, max: 20 },
+    { min: 20, max: 45 },
+    { min: 190, max: 240 },
 ];
 
 function randomHue() {
@@ -118,7 +117,6 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold">Estadísticas generales</h1>
 
-                <!-- Exportar SIN filtros -->
                 <a
                     :href="
                         route('admin.export.excel', { module: 'statistics' })
@@ -132,7 +130,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </a>
             </div>
 
-            <!-- 🟢 Tarjetas con nombres en español -->
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 <Card
                     v-for="(value, key) in stats"

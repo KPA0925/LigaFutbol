@@ -16,17 +16,11 @@ use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         Fortify::createUsersUsing(CreateNewUser::class);
@@ -35,7 +29,6 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
-        // Vistas para Inertia
         Fortify::loginView(fn() => \Inertia\Inertia::render('auth/Login'));
         Fortify::registerView(fn() => \Inertia\Inertia::render('auth/Register'));
         Fortify::confirmPasswordView(fn() => \Inertia\Inertia::render('auth/ConfirmPassword'));
@@ -43,7 +36,6 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetPasswordView(fn($request) => \Inertia\Inertia::render('auth/ResetPassword', ['request' => $request]));
         Fortify::verifyEmailView(fn() => \Inertia\Inertia::render('auth/VerifyEmail'));
 
-        // Rate Limiting
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
             return Limit::perMinute(5)->by($throttleKey);

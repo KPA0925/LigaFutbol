@@ -6,9 +6,6 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
 
-/* -------------------------
-   📌 Props
---------------------------*/
 interface Team {
     id: number;
     name: string;
@@ -16,31 +13,22 @@ interface Team {
     stadium: string | null;
     capacity: number;
     players_count: number;
-    founded_date: string | null; // YYYY-MM-DD
+    founded_date: string | null;
 }
 
 const props = defineProps<{
     teams: Team[];
 }>();
 
-/* -------------------------
-   🔍 Filtros
---------------------------*/
 const filterName = ref('');
 const filterCity = ref('');
 const filterStadium = ref('');
 
-/* -------------------------
-   Estado interno
---------------------------*/
 const results = ref<Team[]>([...props.teams]);
 
 const itemsPerPage = 5;
 const currentPage = ref(1);
 
-/* -------------------------
-   Normalizar textos
---------------------------*/
 function normalize(str: string | null | undefined) {
     return String(str ?? '')
         .normalize('NFD')
@@ -49,9 +37,6 @@ function normalize(str: string | null | undefined) {
         .trim();
 }
 
-/* -------------------------
-   📆 Formatear fecha YYYY-MM-DD
---------------------------*/
 function formatFounded(dateStr: string | null) {
     if (!dateStr) return '—';
     const d = new Date(dateStr);
@@ -63,9 +48,6 @@ function formatFounded(dateStr: string | null) {
     return `${year}-${month}-${day}`;
 }
 
-/* -------------------------
-   🔎 Buscar
---------------------------*/
 function search() {
     results.value = props.teams.filter((t) => {
         const nameOK = normalize(t.name).includes(normalize(filterName.value));
@@ -80,9 +62,6 @@ function search() {
     currentPage.value = 1;
 }
 
-/* -------------------------
-   🧹 Limpiar filtros
---------------------------*/
 function clearFilters() {
     filterName.value = '';
     filterCity.value = '';
@@ -92,17 +71,11 @@ function clearFilters() {
     currentPage.value = 1;
 }
 
-/* -------------------------
-   📄 Paginación
---------------------------*/
 const paginated = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
     return results.value.slice(start, start + itemsPerPage);
 });
 
-/* -------------------------
-   ❌ Eliminar (modal)
---------------------------*/
 const showDeleteModal = ref(false);
 const teamToDelete = ref<number | null>(null);
 
@@ -123,9 +96,6 @@ function cancelDelete() {
     teamToDelete.value = null;
 }
 
-/* -------------------------
-   🧭 Breadcrumbs
---------------------------*/
 const breadcrumbs = [{ title: 'Equipos', href: route('admin.teams.index') }];
 </script>
 
@@ -134,7 +104,6 @@ const breadcrumbs = [{ title: 'Equipos', href: route('admin.teams.index') }];
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
-            <!-- 🧭 Encabezado -->
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-800">
                     Equipos de la liga
@@ -147,7 +116,6 @@ const breadcrumbs = [{ title: 'Equipos', href: route('admin.teams.index') }];
                 </Link>
             </div>
 
-            <!-- 🔍 Filtros -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
@@ -156,7 +124,6 @@ const breadcrumbs = [{ title: 'Equipos', href: route('admin.teams.index') }];
                 </h2>
 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-                    <!-- Nombre -->
                     <div class="flex flex-col">
                         <label class="text-sm font-medium text-gray-600"
                             >Nombre</label
@@ -169,7 +136,6 @@ const breadcrumbs = [{ title: 'Equipos', href: route('admin.teams.index') }];
                         />
                     </div>
 
-                    <!-- Ciudad -->
                     <div class="flex flex-col">
                         <label class="text-sm font-medium text-gray-600"
                             >Ciudad</label
@@ -182,7 +148,6 @@ const breadcrumbs = [{ title: 'Equipos', href: route('admin.teams.index') }];
                         />
                     </div>
 
-                    <!-- Estadio -->
                     <div class="flex flex-col">
                         <label class="text-sm font-medium text-gray-600"
                             >Estadio</label
@@ -214,7 +179,6 @@ const breadcrumbs = [{ title: 'Equipos', href: route('admin.teams.index') }];
                 </div>
             </div>
 
-            <!-- 📋 Listado -->
             <div
                 class="rounded-xl border border-gray-200 bg-white p-6 shadow-md"
             >
@@ -344,7 +308,6 @@ const breadcrumbs = [{ title: 'Equipos', href: route('admin.teams.index') }];
         </div>
     </AppLayout>
 
-    <!-- 🔥 Modal -->
     <ConfirmDeleteModal
         :show="showDeleteModal"
         title="Eliminar equipo"

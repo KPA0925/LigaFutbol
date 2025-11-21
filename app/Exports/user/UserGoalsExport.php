@@ -24,10 +24,6 @@ class UserGoalsExport implements FromCollection, WithHeadings, WithEvents
     {
         $q = Goal::with(['player.team', 'match']);
 
-        /** -----------------------------
-         *  FILTRO: JUGADOR
-         *  Insensible a mayúsculas/minúsculas
-         * ----------------------------- */
         if (!empty($this->filters['player'])) {
             $text = strtolower($this->filters['player']);
 
@@ -36,9 +32,6 @@ class UserGoalsExport implements FromCollection, WithHeadings, WithEvents
             });
         }
 
-        /** -----------------------------
-         *  FILTRO: EQUIPO
-         * ----------------------------- */
         if (!empty($this->filters['team'])) {
             $text = strtolower($this->filters['team']);
 
@@ -47,9 +40,6 @@ class UserGoalsExport implements FromCollection, WithHeadings, WithEvents
             });
         }
 
-        /** -----------------------------
-         *  FILTRO: TEMPORADA
-         * ----------------------------- */
         if (!empty($this->filters['season'])) {
             $text = strtolower($this->filters['season']);
 
@@ -92,17 +82,15 @@ class UserGoalsExport implements FromCollection, WithHeadings, WithEvents
                 $sheet   = $event->sheet->getDelegate();
                 $lastRow = $sheet->getHighestRow();
 
-                // Header con color rojo
                 $sheet->getStyle('A1:G1')->applyFromArray([
                     'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'color' => ['rgb' => 'D62027'], // Color rojo del tema
+                        'color' => ['rgb' => 'D62027'],
                     ],
                 ]);
 
-                // Alternating row colors
                 for ($row = 2; $row <= $lastRow; $row++) {
                     $sheet->getStyle("A{$row}:G{$row}")->applyFromArray([
                         'fill' => [
@@ -112,7 +100,6 @@ class UserGoalsExport implements FromCollection, WithHeadings, WithEvents
                     ]);
                 }
 
-                // Borders
                 $sheet->getStyle("A1:G{$lastRow}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
@@ -122,12 +109,10 @@ class UserGoalsExport implements FromCollection, WithHeadings, WithEvents
                     ],
                 ]);
 
-                // Center alignment
                 $sheet->getStyle("A1:G{$lastRow}")
                     ->getAlignment()
                     ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                // Auto-size columns
                 foreach (range('A', 'G') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }

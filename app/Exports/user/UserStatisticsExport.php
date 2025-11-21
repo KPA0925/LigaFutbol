@@ -125,7 +125,6 @@ class UserStatisticsExport implements FromCollection, WithHeadings, WithEvents
                 $sheet = $event->sheet->getDelegate();
                 $lastRow = $sheet->getHighestRow();
 
-                // Títulos principales en ROJO
                 for ($row = 1; $row <= $lastRow; $row++) {
 
                     $value = $sheet->getCell("A{$row}")->getValue();
@@ -145,13 +144,12 @@ class UserStatisticsExport implements FromCollection, WithHeadings, WithEvents
                             ],
                             'fill' => [
                                 'fillType' => Fill::FILL_SOLID,
-                                'color' => ['rgb' => 'D62027'] // Color rojo
+                                'color' => ['rgb' => 'D62027']
                             ],
                         ]);
                     }
                 }
 
-                // Sub-encabezados en gris
                 foreach (range(1, $lastRow) as $row) {
 
                     $cell = $sheet->getCell("A{$row}")->getValue();
@@ -173,7 +171,6 @@ class UserStatisticsExport implements FromCollection, WithHeadings, WithEvents
                     }
                 }
 
-                // Bordes
                 $sheet->getStyle("A1:B{$lastRow}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
@@ -183,7 +180,6 @@ class UserStatisticsExport implements FromCollection, WithHeadings, WithEvents
                     ],
                 ]);
 
-                // Auto-size
                 foreach (range('A', 'B') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }

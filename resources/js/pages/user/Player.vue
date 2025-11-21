@@ -6,9 +6,6 @@ import { route } from 'ziggy-js';
 import { dashboard } from '@/routes';
 import { Button } from '@/components/ui/button';
 
-/* -------------------------
-   🧾 Tipos
---------------------------*/
 interface Player {
     id: number;
     fullname: string;
@@ -17,24 +14,15 @@ interface Player {
     team?: { name: string } | null;
 }
 
-/* -------------------------
-   📦 Props
---------------------------*/
 const props = defineProps<{
     players: Player[];
 }>();
 
-/* -------------------------
-   🔍 Filtros inputs
---------------------------*/
 const filterName = ref('');
 const filterBirth = ref('');
 const filterPosition = ref('');
 const filterTeam = ref('');
 
-/* -------------------------
-   🔍 Filtros aplicados (congelados)
---------------------------*/
 const activeFilters = ref({
     name: '',
     birth: '',
@@ -44,9 +32,6 @@ const activeFilters = ref({
 
 const filtersEnabled = ref(false);
 
-/* -------------------------
-   🔎 Filtrado computado
---------------------------*/
 const filtered = computed(() => {
     if (!filtersEnabled.value) return props.players;
 
@@ -71,9 +56,6 @@ const filtered = computed(() => {
     });
 });
 
-/* -------------------------
-   🔘 Aplicar filtros
---------------------------*/
 function applyFilters() {
     activeFilters.value = {
         name: filterName.value,
@@ -84,9 +66,6 @@ function applyFilters() {
     filtersEnabled.value = true;
 }
 
-/* -------------------------
-   🧹 Limpiar filtros
---------------------------*/
 function clearFilters() {
     filterName.value = '';
     filterBirth.value = '';
@@ -103,9 +82,6 @@ function clearFilters() {
     filtersEnabled.value = false;
 }
 
-/* -------------------------
-   🧭 Breadcrumbs
---------------------------*/
 const breadcrumbs = [{ title: 'Jugadores', href: dashboard().url }];
 </script>
 
@@ -114,7 +90,6 @@ const breadcrumbs = [{ title: 'Jugadores', href: dashboard().url }];
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
-            <!-- 🧭 Título + Excel -->
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-800">Jugadores</h1>
 
@@ -136,7 +111,6 @@ const breadcrumbs = [{ title: 'Jugadores', href: dashboard().url }];
                 </a>
             </div>
 
-            <!-- 🔍 Filtros -->
             <div class="rounded-xl border bg-white p-6 shadow-md">
                 <h2 class="mb-4 text-lg font-semibold text-gray-800">
                     Filtros de búsqueda
@@ -209,7 +183,6 @@ const breadcrumbs = [{ title: 'Jugadores', href: dashboard().url }];
                 </div>
             </div>
 
-            <!-- 🎴 GRID DE TARJETAS -->
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <div
                     v-for="p in filtered"
@@ -251,7 +224,6 @@ const breadcrumbs = [{ title: 'Jugadores', href: dashboard().url }];
                 </div>
             </div>
 
-            <!-- Sin resultados -->
             <p
                 v-if="filtered.length === 0"
                 class="text-center text-gray-500 mt-10 text-lg"

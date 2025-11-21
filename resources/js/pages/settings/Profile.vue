@@ -46,7 +46,6 @@ const emailChanged = page.props.email_changed;
                     description="Actualiza tu nombre y dirección de correo electrónico"
                 />
 
-                <!-- MENSAJE CUANDO SE CAMBIA EL CORREO -->
                 <div
                     v-if="emailChanged"
                     class="p-3 rounded-md bg-yellow-100 text-yellow-800 border border-yellow-300 text-sm"

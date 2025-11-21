@@ -21,18 +21,12 @@ interface Goal {
 
 const props = defineProps<{ goals: Goal[] }>();
 
-/* -------------------------
-   🔍 Filtros inputs
---------------------------*/
 const filters = ref({
     season: '',
     team: '',
     player: '',
 });
 
-/* -------------------------
-   🔍 Filtros aplicados (congelados)
---------------------------*/
 const appliedFilters = ref({
     season: '',
     team: '',
@@ -41,26 +35,17 @@ const appliedFilters = ref({
 
 const filtersEnabled = ref(false);
 
-/* -------------------------
-   🔘 Aplicar filtros
---------------------------*/
 function applyFilters() {
     appliedFilters.value = { ...filters.value };
     filtersEnabled.value = true;
 }
 
-/* -------------------------
-   🧹 Limpiar filtros
---------------------------*/
 function resetFilters() {
     filters.value = { season: '', team: '', player: '' };
     appliedFilters.value = { ...filters.value };
     filtersEnabled.value = false;
 }
 
-/* -------------------------
-   🔎 Filtrado computado
---------------------------*/
 const filtered = computed(() => {
     if (!filtersEnabled.value) return props.goals;
 
@@ -88,9 +73,6 @@ const filtered = computed(() => {
     });
 });
 
-/* -------------------------
-   Utilities
---------------------------*/
 function shortDate(dt: string) {
     const d = new Date(dt);
     const day = String(d.getDate()).padStart(2, '0');
@@ -113,7 +95,6 @@ const breadcrumbs = [{ title: 'Goles', href: dashboard().url }];
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
 
-            <!-- Header + Export -->
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-800">Goles</h1>
 
@@ -134,7 +115,6 @@ const breadcrumbs = [{ title: 'Goles', href: dashboard().url }];
                 </a>
             </div>
 
-            <!-- FILTROS -->
             <div class="rounded-xl border bg-white p-6 shadow-md">
                 <h2 class="mb-4 text-lg font-semibold text-gray-800">Filtros de Búsqueda</h2>
 
@@ -188,7 +168,6 @@ const breadcrumbs = [{ title: 'Goles', href: dashboard().url }];
                 </div>
             </div>
 
-            <!-- CARDS -->
             <div
                 v-if="filtered.length > 0"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -198,7 +177,6 @@ const breadcrumbs = [{ title: 'Goles', href: dashboard().url }];
                     :key="g.id"
                     class="rounded-2xl border bg-white p-6 flex flex-col shadow hover:shadow-lg transition"
                 >
-                    <!-- top: minute + name + team -->
                     <div class="flex items-start gap-4">
                         <div class="w-14 h-14 rounded-full bg-red-600 text-white flex items-center justify-center text-lg font-bold">
                             {{ g.minute }}'
@@ -224,10 +202,8 @@ const breadcrumbs = [{ title: 'Goles', href: dashboard().url }];
 
                     <div class="my-4 border-t"></div>
 
-                    <!-- bottom row: season + match date (same row) -->
                     <div class="grid grid-cols-2 gap-4 text-center text-gray-700">
 
-                        <!-- Temporada -->
                         <div>
                             <div class="text-lg font-semibold text-gray-900">
                                 {{ g.match.season }}
@@ -235,7 +211,6 @@ const breadcrumbs = [{ title: 'Goles', href: dashboard().url }];
                             <div class="text-xs text-gray-500">Temporada</div>
                         </div>
 
-                        <!-- Fecha del partido -->
                         <div>
                             <div class="text-lg font-semibold text-gray-900">
                                 {{ shortDate(g.match.match_date_time) }}
@@ -247,7 +222,6 @@ const breadcrumbs = [{ title: 'Goles', href: dashboard().url }];
                 </div>
             </div>
 
-            <!-- empty -->
             <div
                 v-else
                 class="rounded-xl border bg-white p-6 shadow-md text-center text-gray-500"

@@ -6,9 +6,6 @@ import { dashboard } from '@/routes';
 import { Button } from '@/components/ui/button';
 import { route } from 'ziggy-js';
 
-/* -------------------------
-   📌 Interfaces
---------------------------*/
 interface Team {
     id: number;
     name: string;
@@ -24,24 +21,15 @@ interface President {
     team?: Team | null;
 }
 
-/* -------------------------
-   📌 Props
---------------------------*/
 const props = defineProps<{
     presidents: President[];
 }>();
 
-/* -------------------------
-    🟦 Filtros inputs
---------------------------*/
 const filterDni = ref('');
 const filterName = ref('');
 const filterLastname = ref('');
 const filterTeam = ref('');
 
-/* -------------------------
-    🟦 Filtros aplicados (CONGELADOS)
---------------------------*/
 const activeFilters = ref({
     dni: '',
     name: '',
@@ -51,9 +39,6 @@ const activeFilters = ref({
 
 const appliedFilters = ref(false);
 
-/* -------------------------
-   🔍 Lógica de filtrado usando activeFilters
---------------------------*/
 const filtered = computed(() => {
     if (!appliedFilters.value) return props.presidents;
 
@@ -74,9 +59,6 @@ const filtered = computed(() => {
     });
 });
 
-/* -------------------------
-   🔘 Botón Buscar → congela filtros
---------------------------*/
 function applyFilters() {
     appliedFilters.value = true;
 
@@ -88,9 +70,6 @@ function applyFilters() {
     };
 }
 
-/* -------------------------
-   ♻ Limpiar filtros (todo vuelve al inicio)
---------------------------*/
 function clearFilters() {
     filterDni.value = '';
     filterName.value = '';
@@ -107,11 +86,6 @@ function clearFilters() {
     appliedFilters.value = false;
 }
 
-
-
-/* -------------------------
-   🧭 Breadcrumbs
---------------------------*/
 const breadcrumbs = [{ title: 'Presidentes', href: dashboard().url }];
 </script>
 
@@ -120,7 +94,6 @@ const breadcrumbs = [{ title: 'Presidentes', href: dashboard().url }];
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
-            <!-- 🧭 TÍTULO -->
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-800">
                     Presidentes de los Equipos
@@ -144,7 +117,6 @@ const breadcrumbs = [{ title: 'Presidentes', href: dashboard().url }];
                 </a>
             </div>
 
-            <!-- 🔎 FILTROS -->
             <div class="rounded-xl border border-gray-200 bg-white p-6 shadow">
                 <h2 class="mb-4 text-lg font-semibold text-gray-800">
                     Filtros de búsqueda
@@ -216,7 +188,6 @@ const breadcrumbs = [{ title: 'Presidentes', href: dashboard().url }];
                 </div>
             </div>
 
-            <!-- 🟥 TARJETAS -->
             <div class="rounded-xl border border-gray-200 bg-white p-6 shadow">
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <div
@@ -225,7 +196,6 @@ const breadcrumbs = [{ title: 'Presidentes', href: dashboard().url }];
                         class="rounded-2xl bg-white p-6 shadow hover:shadow-lg transition border border-gray-100"
                     >
                         <div class="flex items-center gap-4">
-                            <!-- Ícono círculo rojo -->
                             <div
                                 class="flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-white text-xl"
                             >

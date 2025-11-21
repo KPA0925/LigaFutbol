@@ -6,10 +6,8 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 
-// 🔥 Recibimos la prop correctamente
 const props = defineProps<{ team: any }>();
 
-// 🔥 Ahora sí usamos props.team
 const form = useForm({
     name: props.team.name,
     founded_date: props.team.founded_date,
@@ -36,7 +34,6 @@ const breadcrumbs = [
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
             >
-                <!-- Título -->
                 <h2 class="mb-1 text-2xl font-semibold text-gray-800">
                     Editar Equipo
                 </h2>
@@ -45,7 +42,6 @@ const breadcrumbs = [
                 </p>
 
                 <form @submit.prevent="submit" class="space-y-5">
-                    <!-- Nombre -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Nombre del equipo</Label>
                         <Input
@@ -55,7 +51,6 @@ const breadcrumbs = [
                         />
                     </div>
 
-                    <!-- Fecha fundación -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Fecha de fundación</Label>
                         <Input
@@ -66,7 +61,6 @@ const breadcrumbs = [
                         />
                     </div>
 
-                    <!-- Ciudad -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Ciudad</Label>
                         <Input
@@ -76,7 +70,6 @@ const breadcrumbs = [
                         />
                     </div>
 
-                    <!-- Estadio -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Estadio</Label>
                         <Input
@@ -86,7 +79,6 @@ const breadcrumbs = [
                         />
                     </div>
 
-                    <!-- Capacidad -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Capacidad</Label>
                         <Input
@@ -97,7 +89,6 @@ const breadcrumbs = [
                         />
                     </div>
 
-                    <!-- Botones -->
                     <div class="flex justify-end gap-3 pt-3">
                         <Link :href="route('admin.teams.index')">
                             <Button

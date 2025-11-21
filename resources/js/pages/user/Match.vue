@@ -18,7 +18,6 @@ interface Match {
 
 const props = defineProps<{ matches: Match[] }>();
 
-// ----------------- FILTROS -----------------
 const searchSeason = ref<number | null>(null);
 const searchTeam = ref('');
 const searchDate = ref('');
@@ -43,7 +42,6 @@ function clearFilters() {
     appliedDate.value = '';
 }
 
-// ----------------- FILTRADO -----------------
 const filteredMatches = computed(() => {
     return props.matches.filter((m) => {
         let ok = true;
@@ -71,7 +69,6 @@ const filteredMatches = computed(() => {
     });
 });
 
-// ----------------- UTILIDADES -----------------
 function formatDate(dateStr: string) {
     const d = new Date(dateStr);
     const y = d.getFullYear();
@@ -100,7 +97,6 @@ function getMonthName(month: string) {
     return meses[Number(month) - 1];
 }
 
-// ----------------- ESTADO DEL PARTIDO -----------------
 function matchStatus(dateStr: string) {
     const now = new Date();
     const match = new Date(dateStr);
@@ -119,7 +115,6 @@ const breadcrumbs = [{ title: 'Partidos', href: dashboard().url }];
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
-            <!-- HEADER -->
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-800">Partidos</h1>
 
@@ -140,7 +135,6 @@ const breadcrumbs = [{ title: 'Partidos', href: dashboard().url }];
                 </a>
             </div>
 
-            <!-- FILTROS -->
             <div class="rounded-xl border bg-white p-6 shadow-md">
                 <h2 class="mb-4 text-lg font-semibold">Filtros de Búsqueda</h2>
 
@@ -190,7 +184,6 @@ const breadcrumbs = [{ title: 'Partidos', href: dashboard().url }];
                 </div>
             </div>
 
-            <!-- LISTA DE PARTIDOS -->
             <div
                 v-if="filteredMatches.length > 0"
                 class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
@@ -200,7 +193,6 @@ const breadcrumbs = [{ title: 'Partidos', href: dashboard().url }];
                     :key="m.id"
                     class="rounded-2xl border bg-white p-6 shadow-md transition hover:shadow-xl"
                 >
-                    <!-- STATUS + FECHA -->
                     <div class="mb-4 flex items-center justify-between">
                         <span
                             class="rounded-full px-3 py-1 text-xs font-semibold"
@@ -236,7 +228,6 @@ const breadcrumbs = [{ title: 'Partidos', href: dashboard().url }];
                         </div>
                     </div>
 
-                    <!-- EQUIPOS + TROFEO -->
                     <div
                         class="mb-3 flex items-center justify-between px-4 text-center"
                     >
@@ -249,7 +240,6 @@ const breadcrumbs = [{ title: 'Partidos', href: dashboard().url }];
                         </div>
                     </div>
 
-                    <!-- RESULTADO -->
                     <div
                         class="text-center text-4xl font-extrabold text-red-600"
                     >
@@ -258,7 +248,6 @@ const breadcrumbs = [{ title: 'Partidos', href: dashboard().url }];
                         {{ m.goal_away }}
                     </div>
 
-                    <!-- TEMPORADA -->
                     <div
                         class="mt-2 flex items-center justify-center gap-2 text-sm text-gray-500"
                     >
@@ -268,7 +257,6 @@ const breadcrumbs = [{ title: 'Partidos', href: dashboard().url }];
                 </div>
             </div>
 
-            <!-- NO RESULTADOS -->
             <div
                 v-else
                 class="rounded-xl border bg-white p-6 text-center text-gray-500 shadow-md"

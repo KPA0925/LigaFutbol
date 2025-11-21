@@ -6,13 +6,11 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 
-// ✅ Recibir props correctamente
 const props = defineProps<{
     player: any;
     teams: { id: number; name: string }[];
 }>();
 
-// ✅ Usar props.player
 const form = useForm({
     fullname: props.player.fullname,
     birth_date: props.player.birth_date,
@@ -38,7 +36,6 @@ const breadcrumbs = [
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
             >
-                <!-- Título -->
                 <h2 class="mb-1 text-2xl font-semibold text-gray-800">
                     Editar Jugador
                 </h2>
@@ -47,7 +44,6 @@ const breadcrumbs = [
                 </p>
 
                 <form @submit.prevent="submit" class="space-y-5">
-                    <!-- Nombre -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Nombre Completo</Label>
                         <Input
@@ -57,7 +53,6 @@ const breadcrumbs = [
                         />
                     </div>
 
-                    <!-- Fecha Nacimiento -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Fecha de Nacimiento</Label>
                         <Input
@@ -68,7 +63,6 @@ const breadcrumbs = [
                         />
                     </div>
 
-                    <!-- Posición -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Posición</Label>
                         <Input
@@ -78,7 +72,6 @@ const breadcrumbs = [
                         />
                     </div>
 
-                    <!-- Equipo -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Equipo</Label>
                         <select
@@ -97,7 +90,6 @@ const breadcrumbs = [
                         </select>
                     </div>
 
-                    <!-- Botones -->
                     <div class="flex justify-end gap-3 pt-3">
                         <Link :href="route('admin.players.index')">
                             <Button

@@ -6,9 +6,6 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
 
-/* -------------------------
-   🧾 Tipos
---------------------------*/
 interface Player {
     id: number;
     fullname: string;
@@ -17,24 +14,15 @@ interface Player {
     team?: { name: string } | null;
 }
 
-/* -------------------------
-   📦 Props
---------------------------*/
 const props = defineProps<{
     players: Player[];
 }>();
 
-/* -------------------------
-   🔍 Filtros del formulario
---------------------------*/
 const filterName = ref('');
 const filterBirth = ref('');
 const filterPosition = ref('');
 const filterTeam = ref('');
 
-/* -------------------------
-   🎯 Filtros realmente aplicados
---------------------------*/
 const activeFilters = ref({
     name: '',
     birth: '',
@@ -44,9 +32,6 @@ const activeFilters = ref({
 
 const filtersEnabled = ref(false);
 
-/* -------------------------
-   🔎 Filtrado REAL (solo usa activeFilters)
---------------------------*/
 const filtered = computed(() => {
     if (!filtersEnabled.value) return props.players;
 
@@ -71,9 +56,6 @@ const filtered = computed(() => {
     });
 });
 
-/* -------------------------
-   📄 Paginación
---------------------------*/
 const itemsPerPage = 5;
 const currentPage = ref(1);
 
@@ -82,9 +64,6 @@ const paginated = computed(() => {
     return filtered.value.slice(start, start + itemsPerPage);
 });
 
-/* -------------------------
-   ❌ Modal
---------------------------*/
 const showDeleteModal = ref(false);
 const playerToDelete = ref<number | null>(null);
 
@@ -100,9 +79,6 @@ function confirmDelete() {
     showDeleteModal.value = false;
 }
 
-/* -------------------------
-   🧭 Breadcrumbs
---------------------------*/
 const breadcrumbs = [
     { title: 'Jugadores', href: route('admin.players.index') },
 ];
@@ -113,7 +89,6 @@ const breadcrumbs = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
-            <!-- 🧭 Encabezado -->
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-800">
                     Jugadores de la liga
@@ -126,7 +101,6 @@ const breadcrumbs = [
                 </Link>
             </div>
 
-            <!-- 🔍 Filtros -->
             <div class="rounded-xl border bg-white p-6 shadow-md">
                 <h2 class="mb-4 text-lg font-semibold text-gray-800">
                     Filtros de Búsqueda
@@ -182,7 +156,6 @@ const breadcrumbs = [
                 </div>
 
                 <div class="mt-6 flex gap-3">
-                    <!-- LIMPIAR -->
                     <Button
                         class="border-[#D62027] px-4 py-2 text-[#D62027]"
                         variant="outline"
@@ -204,7 +177,6 @@ const breadcrumbs = [
                         Limpiar
                     </Button>
 
-                    <!-- BUSCAR -->
                     <Button
                         class="bg-[#D62027] px-4 py-2 text-white"
                         @click="
@@ -221,7 +193,6 @@ const breadcrumbs = [
                 </div>
             </div>
 
-            <!-- 📋 Listado -->
             <div class="rounded-xl border bg-white p-6 shadow-md">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-gray-800">
@@ -314,7 +285,6 @@ const breadcrumbs = [
                     </table>
                 </div>
 
-                <!-- Pagination -->
                 <div
                     class="mt-4 flex items-center justify-between text-sm text-gray-600"
                 >
@@ -348,7 +318,6 @@ const breadcrumbs = [
             </div>
         </div>
 
-        <!-- 🔥 MODAL -->
         <ConfirmDeleteModal
             :show="showDeleteModal"
             title="Eliminar jugador"

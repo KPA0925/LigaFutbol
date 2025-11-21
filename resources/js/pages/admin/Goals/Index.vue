@@ -7,9 +7,6 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { route } from 'ziggy-js';
 
-/* ---------------------------------
-   🔹 Tipos
------------------------------------ */
 interface Goal {
     id: number;
     minute: number;
@@ -18,23 +15,16 @@ interface Goal {
     match: { season: string; match_date_time: string };
 }
 
-/* ---------------------------------
-   🔹 Props
------------------------------------ */
 const props = defineProps<{
     goals: Goal[];
 }>();
 
-/* ---------------------------------
-   🔹 Filtros
------------------------------------ */
 const filters = ref({
     season: '',
     team: '',
     player: '',
 });
 
-// 👇 Filtros aplicados al hacer clic en "Buscar"
 const appliedFilters = ref({
     season: '',
     team: '',
@@ -46,15 +36,9 @@ function applyFilters() {
     currentPage.value = 1;
 }
 
-/* ---------------------------------
-   🔹 Paginación
------------------------------------ */
 const itemsPerPage = 5;
 const currentPage = ref(1);
 
-/* ---------------------------------
-   🔹 Filtrado
------------------------------------ */
 const filtered = computed(() => {
     return props.goals.filter((g) => {
         return (
@@ -76,9 +60,6 @@ const paginated = computed(() => {
     return filtered.value.slice(start, start + itemsPerPage);
 });
 
-/* ---------------------------------
-   🔹 Reset filtros
------------------------------------ */
 function resetFilters() {
     filters.value = {
         season: '',
@@ -89,9 +70,6 @@ function resetFilters() {
     currentPage.value = 1;
 }
 
-/* ---------------------------------
-   ❌ Modal de eliminación
------------------------------------ */
 const showDeleteModal = ref(false);
 const goalToDelete = ref<number | null>(null);
 
@@ -117,7 +95,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-6">
-            <!-- 🧭 ENCABEZADO -->
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-gray-800">
                     Registro de Goles
@@ -130,7 +107,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </Link>
             </div>
 
-            <!-- 🔍 FILTROS -->
             <div class="rounded-xl border bg-white p-6 shadow-md">
                 <h2 class="mb-4 text-lg font-semibold text-gray-800">
                     Filtros de Búsqueda
@@ -174,7 +150,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
                 </div>
 
-                <!-- Botones -->
                 <div class="mt-6 flex gap-3">
                     <Button
                         class="border-[#D62027] px-4 py-2 text-[#D62027]"
@@ -193,7 +168,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
             </div>
 
-            <!-- 📋 LISTADO -->
             <div class="rounded-xl border bg-white p-6 shadow-md">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-gray-800">
@@ -298,7 +272,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </table>
                 </div>
 
-                <!-- PAGINACIÓN -->
                 <div
                     class="mt-4 flex items-center justify-between text-sm text-gray-600"
                 >
@@ -332,7 +305,6 @@ const breadcrumbs: BreadcrumbItem[] = [
             </div>
         </div>
 
-        <!-- 🔥 MODAL -->
         <ConfirmDeleteModal
             :show="showDeleteModal"
             title="Eliminar gol"

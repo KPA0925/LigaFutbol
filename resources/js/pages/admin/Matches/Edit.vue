@@ -13,7 +13,6 @@ const props = defineProps({
     id_away_team: Number,
 });
 
-// Form con valores precargados
 const form = useForm({
     match_date_time: props.match.match_date_time_formatted,
     season: props.match.season,
@@ -39,7 +38,6 @@ const breadcrumbs = [
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
             >
-                <!-- Título -->
                 <h2 class="mb-1 text-2xl font-semibold text-gray-800">
                     Editar Partido
                 </h2>
@@ -47,7 +45,6 @@ const breadcrumbs = [
                     Modifique los datos del partido seleccionado.
                 </p>
 
-                <!-- 🔴 Error global por conflicto de horarios -->
                 <div
                     v-if="form.errors.match_date_time"
                     class="mb-4 rounded-lg border border-red-300 bg-red-100 px-4 py-3 text-red-700"
@@ -56,7 +53,6 @@ const breadcrumbs = [
                 </div>
 
                 <form @submit.prevent="submit" class="space-y-5">
-                    <!-- FECHA Y HORA -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Fecha y Hora</Label>
                         <Input
@@ -73,7 +69,6 @@ const breadcrumbs = [
                         </p>
                     </div>
 
-                    <!-- TEMPORADA -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Temporada</Label>
                         <Input
@@ -90,7 +85,6 @@ const breadcrumbs = [
                         </p>
                     </div>
 
-                    <!-- EQUIPO LOCAL -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Equipo Local</Label>
                         <select
@@ -115,7 +109,6 @@ const breadcrumbs = [
                         </p>
                     </div>
 
-                    <!-- EQUIPO VISITANTE -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Equipo Visitante</Label>
                         <select
@@ -140,7 +133,6 @@ const breadcrumbs = [
                         </p>
                     </div>
 
-                    <!-- BOTONES -->
                     <div class="flex justify-end gap-3 pt-3">
                         <Link :href="route('admin.matches.index')">
                             <Button

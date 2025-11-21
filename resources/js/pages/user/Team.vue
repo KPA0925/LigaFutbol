@@ -18,24 +18,15 @@ interface Team {
 
 const props = defineProps<{ teams: Team[] }>();
 
-/* -------------------------
-   🔍 Filtros inputs
---------------------------*/
 const filterName = ref('');
 const filterCity = ref('');
 const filterStadium = ref('');
 
-/* -------------------------
-   🔍 Filtros aplicados (congelados)
---------------------------*/
 const appliedName = ref('');
 const appliedCity = ref('');
 const appliedStadium = ref('');
 const filtersApplied = ref(false);
 
-/* -------------------------
-   Normalizar texto
---------------------------*/
 function normalize(str: string | null | undefined) {
     return String(str ?? '')
         .normalize('NFD')
@@ -44,9 +35,6 @@ function normalize(str: string | null | undefined) {
         .trim();
 }
 
-/* -------------------------
-   🔎 Filtrado computado
---------------------------*/
 const filtered = computed(() => {
     if (!filtersApplied.value) return props.teams;
 
@@ -63,9 +51,6 @@ const filtered = computed(() => {
     });
 });
 
-/* -------------------------
-   🔘 Aplicar filtros
---------------------------*/
 function applyFilters() {
     filtersApplied.value = true;
     appliedName.value = filterName.value;
@@ -73,9 +58,6 @@ function applyFilters() {
     appliedStadium.value = filterStadium.value;
 }
 
-/* -------------------------
-   🧹 Limpiar filtros
---------------------------*/
 function clearFilters() {
     filterName.value = '';
     filterCity.value = '';
@@ -88,9 +70,6 @@ function clearFilters() {
     filtersApplied.value = false;
 }
 
-/* -------------------------
-   📆 Fecha
---------------------------*/
 function formatFounded(dateStr: string | null) {
     if (!dateStr) return '—';
     const d = new Date(dateStr);
@@ -124,7 +103,6 @@ const breadcrumbs = [{ title: 'Equipos', href: dashboard().url }];
                 </a>
             </div>
 
-            <!-- ░░░░░ Filtros ░░░░░ -->
             <div class="bg-white border border-gray-200 dark:bg-gray-900 rounded-xl p-6 shadow-md">
                 <h2 class="text-lg font-semibold mb-4">Filtros de Búsqueda</h2>
 
@@ -157,7 +135,6 @@ const breadcrumbs = [{ title: 'Equipos', href: dashboard().url }];
                     </div>
                 </div>
 
-                <!-- BOTONES -->
                 <div class="mt-6 flex gap-3">
                     <button
                         class="border-[#D62027] text-[#D62027] px-4 py-2 rounded-lg border hover:bg-red-50"
@@ -176,7 +153,6 @@ const breadcrumbs = [{ title: 'Equipos', href: dashboard().url }];
                 </div>
             </div>
 
-            <!-- ░░░░░ Tarjetas de equipos ░░░░░ -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div
                     v-for="team in filtered"

@@ -5,7 +5,6 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h, type DefineComponent } from 'vue';
 import { initializeTheme } from './composables/useAppearance';
 
-// Inicializar tema ANTES de montar Vue (muy importante)
 initializeTheme();
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';

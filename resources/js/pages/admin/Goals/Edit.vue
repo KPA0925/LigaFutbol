@@ -56,7 +56,6 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
             >
-                <!-- Título -->
                 <h2 class="mb-1 text-2xl font-semibold text-gray-800">
                     Editar Gol
                 </h2>
@@ -65,7 +64,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </p>
 
                 <form @submit.prevent="submit" class="space-y-5">
-                    <!-- Partido -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Partido</Label>
                         <select
@@ -86,7 +84,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </select>
                     </div>
 
-                    <!-- Equipo -->
                     <div class="flex flex-col gap-1" v-if="selectedMatch">
                         <Label class="text-gray-700">Equipo</Label>
                         <select
@@ -105,7 +102,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </select>
                     </div>
 
-                    <!-- Jugador -->
                     <div class="flex flex-col gap-1" v-if="form.id_team">
                         <Label class="text-gray-700">Jugador</Label>
                         <select
@@ -124,7 +120,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </select>
                     </div>
 
-                    <!-- Minuto -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Minuto</Label>
                         <Input
@@ -137,7 +132,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                         />
                     </div>
 
-                    <!-- Descripción -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Descripción</Label>
                         <Input
@@ -147,7 +141,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                         />
                     </div>
 
-                    <!-- Botones -->
                     <div class="flex justify-end gap-3 pt-3">
                         <Link :href="route('admin.goals.index')">
                             <Button

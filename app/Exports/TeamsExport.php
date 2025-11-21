@@ -22,14 +22,12 @@ class TeamsExport implements FromCollection, WithHeadings, WithEvents
 
     public function collection()
     {
-        // Normaliza filtro
         $normalize = function ($str) {
             $str = strtolower($str ?? '');
             $str = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
             return trim($str);
         };
 
-        // Función SQL para normalizar acentos dentro de PostgreSQL
         $sqlNormalize = "
             LOWER(
                 TRANSLATE(%s,
@@ -41,19 +39,16 @@ class TeamsExport implements FromCollection, WithHeadings, WithEvents
 
         $q = Team::query();
 
-        // FILTRO NOMBRE
         if (!empty($this->f['name'])) {
             $value = $normalize($this->f['name']);
             $q->whereRaw(sprintf($sqlNormalize, 'name') . " LIKE ?", ["%{$value}%"]);
         }
 
-        // FILTRO CIUDAD
         if (!empty($this->f['city'])) {
             $value = $normalize($this->f['city']);
             $q->whereRaw(sprintf($sqlNormalize, 'city') . " LIKE ?", ["%{$value}%"]);
         }
 
-        // FILTRO ESTADIO
         if (!empty($this->f['stadium'])) {
             $value = $normalize($this->f['stadium']);
             $q->whereRaw(sprintf($sqlNormalize, 'stadium') . " LIKE ?", ["%{$value}%"]);
@@ -93,7 +88,6 @@ class TeamsExport implements FromCollection, WithHeadings, WithEvents
                 $sheet   = $event->sheet->getDelegate();
                 $lastRow = $sheet->getHighestRow();
 
-                // Encabezado
                 $sheet->getStyle('A1:G1')->applyFromArray([
                     'font' => [
                         'bold' => true,
@@ -108,7 +102,6 @@ class TeamsExport implements FromCollection, WithHeadings, WithEvents
                     ],
                 ]);
 
-                // Filas alternadas
                 for ($row = 2; $row <= $lastRow; $row++) {
                     $sheet->getStyle("A{$row}:G{$row}")->applyFromArray([
                         'fill' => [
@@ -118,7 +111,6 @@ class TeamsExport implements FromCollection, WithHeadings, WithEvents
                     ]);
                 }
 
-                // Bordes
                 $sheet->getStyle("A1:G{$lastRow}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
@@ -128,12 +120,10 @@ class TeamsExport implements FromCollection, WithHeadings, WithEvents
                     ],
                 ]);
 
-                // Alinear centrado
                 $sheet->getStyle("A1:G{$lastRow}")
                     ->getAlignment()
                     ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                // Auto tamaño
                 foreach (range('A', 'G') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }

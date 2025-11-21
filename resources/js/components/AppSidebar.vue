@@ -26,7 +26,6 @@ const isUser = computed(
 
 const currentUrl = computed(() => usePage().url);
 
-// Estado para controlar el menú móvil
 const isMobileMenuOpen = ref(false);
 
 function isActive(path: string, exact = false) {
@@ -48,7 +47,6 @@ const defaultClass = 'hover:bg-[#B81E23] transition';
 </script>
 
 <template>
-    <!-- Botón hamburguesa (visible solo en móvil/tablet) -->
     <button
         @click="toggleMobileMenu"
         class="fixed left-4 top-2 z-50 flex h-12 w-12 flex-col items-center justify-center gap-1.5 md:hidden"
@@ -59,24 +57,20 @@ const defaultClass = 'hover:bg-[#B81E23] transition';
         <span class="block h-0.5 w-6 bg-[#D62027] transition-all"></span>
     </button>
 
-    <!-- Overlay oscuro (solo visible cuando el menú está abierto en móvil) -->
     <div
         v-if="isMobileMenuOpen"
         @click="closeMobileMenu"
         class="fixed inset-0 z-40 bg-black/50 md:hidden"
     ></div>
 
-    <!-- Sidebar -->
     <aside
         :class="[
             'fixed left-0 top-0 z-50 flex h-screen w-[60%] flex-col justify-between overflow-hidden rounded-r-[50px] border-r-4 border-[#003366] bg-[#D62027] text-white shadow-lg transition-transform duration-300 md:w-[25%] lg:w-[17%]',
-            // En móvil: oculto por defecto, visible cuando isMobileMenuOpen es true
             isMobileMenuOpen
                 ? 'translate-x-0'
                 : '-translate-x-full md:translate-x-0',
         ]"
     >
-        <!-- Botón cerrar (solo visible en móvil cuando el menú está abierto) -->
         <button
             @click="closeMobileMenu"
             class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-lg text-white md:hidden"

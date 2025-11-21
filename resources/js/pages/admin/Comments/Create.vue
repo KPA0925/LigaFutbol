@@ -32,7 +32,6 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div
                 class="w-full max-w-xl rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
             >
-                <!-- Título -->
                 <h2 class="mb-1 text-2xl font-semibold text-gray-800">
                     Crear Nuevo Comentario
                 </h2>
@@ -41,7 +40,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </p>
 
                 <form @submit.prevent="submit" class="space-y-5">
-                    <!-- Usuario -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Usuario</Label>
                         <select
@@ -60,7 +58,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </select>
                     </div>
 
-                    <!-- Descripción -->
                     <div class="flex flex-col gap-1">
                         <Label class="text-gray-700">Descripción</Label>
                         <Input
@@ -71,7 +68,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                         />
                     </div>
 
-                    <!-- Botones -->
                     <div class="flex justify-end gap-3 pt-3">
                         <Link :href="route('admin.comments.index')">
                             <Button
